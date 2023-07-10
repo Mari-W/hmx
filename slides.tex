@@ -1,0 +1,182 @@
+\documentclass[aspectratio=169]{beamer}
+\usetheme{Boadilla}
+\useoutertheme{infolines}
+\setbeamertemplate{navigation symbols}{}
+
+\usepackage{fontspec}
+\usepackage{unicode-math}
+\usepackage[Latin,Greek]{ucharclasses}
+\usepackage{amsmath}
+\usepackage{proof}
+\usepackage{minted}
+\AtBeginEnvironment{minted}{%
+  \renewcommand{\fcolorbox}[4][]{#4}}
+
+\newfontfamily\substitutefont{CMU Serif}
+\setTransitionsForGreek{\begingroup\substitutefont}{\endgroup}
+
+\title{HM($X$): Type Inference with Constraint Types}
+\institute[Uni Freiburg]{Chair of Programming Languages, University of
+  Freiburg}
+\author{Marius Weidner}
+
+\input{definitions}
+
+\begin{document}
+
+\begin{frame}
+  \titlepage
+\end{frame}
+
+\begin{frame}{Outline}
+  \tableofcontents
+\end{frame}
+
+\section{HM: Polymorphic Lambda Calculus with Full Type Inference}
+
+\begin{frame}[fragile]
+  \frametitle{Hindley Milner Basics}
+  \begin{columns}
+    \begin{column}{0.3\textwidth}
+      \begin{center}
+        \begin{itemize}
+          \item Let Polymorphism
+          \item Full Type Inference
+          \item Principle Type Property
+        \end{itemize}
+      \end{center}
+    \end{column}
+    \begin{column}{0.6\textwidth}
+      \begin{center}
+        \begin{block}{Pseudocode Example}
+          \begin{minted}{ocaml}
+let id = λx. x in         :: α → α 
+id 42                     :: Int
+id "Hello World"          :: Str
+          \end{minted}
+        \end{block}
+      \end{center}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Hindley Milner Syntax}
+  \begin{columns}
+    \begin{column}{0.45\textwidth}
+      \begin{center}
+        $e \ ∷= \ x \\ \quad\quad\quad \quad | \
+          λx. e \\ \quad\quad\quad \  | \
+          e \ e  \\ \quad\quad\quad\quad\quad\quad\quad\quad\quad \ | \
+          \KWLet x = e \KWIn e$
+      \end{center}
+    \end{column}
+    \begin{column}{0.45\textwidth}
+      \begin{center}
+        $τ \ ∷= \ α \ | \ τ → τ$
+      \end{center}
+      \begin{center}
+        $σ \ ∷= \ τ \ | \ ∀α. σ$
+      \end{center}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Hindley Milner Typing}
+  \begin{columns}
+    \begin{column}{0.45\textwidth}
+      \begin{center}
+        \HMLet
+      \end{center}
+    \end{column}
+    \begin{column}{0.45\textwidth}
+      \begin{center}
+        \HMIntro
+      \end{center}
+      \begin{center}
+        \HMElim
+      \end{center}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\section{Constraint Systems: Formulate Constraints on Types}
+
+\begin{frame}[fragile]
+  \frametitle{}
+  \begin{block}{}
+    \begin{center}
+      .
+    \end{center}
+  \end{block}
+\end{frame}
+
+\section{HM($X$): HM Parametrized over Constraint Systems $X$}
+
+\begin{frame}[fragile]
+  \frametitle{HM($X$) Syntax}
+  \begin{columns}
+    \begin{column}{0.45\textwidth}
+      \begin{center}
+        $C \ ∷= \ x \\ \quad\quad\quad \quad | \
+          λx. e \\ \quad\quad\quad \  | \
+          e \ e  \\ \quad\quad\quad\quad\quad\quad\quad\quad\quad \ | \
+          \KWLet x = e \KWIn e$
+      \end{center}
+    \end{column}
+    \begin{column}{0.45\textwidth}
+      \begin{center}
+        $τ \ ∷= \ α \ | \ τ → τ$
+      \end{center}
+      \begin{center}
+        $σ \ ∷= \ τ \ | \ ∀α.C ⇒ σ$
+      \end{center}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{HM($X$) Typing}
+  \begin{columns}
+    \begin{column}{0.45\textwidth}
+      \begin{center}
+        \HMXLet
+      \end{center}
+    \end{column}
+    \begin{column}{0.45\textwidth}
+      \begin{center}
+        \HMXIntro
+      \end{center}
+      \begin{center}
+        \HMXElim
+      \end{center}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+
+
+\section{HM($\mathcal{R}$): Instantiating HM($X$) with Polymorphic Records}
+
+\begin{frame}[fragile]
+  \frametitle{}
+  \begin{block}{}
+    \begin{center}
+      .
+    \end{center}
+  \end{block}
+\end{frame}
+
+\section{Metatheory: Properties of HM($X$)}
+
+\begin{frame}[fragile]
+  \frametitle{}
+  \begin{block}{}
+    \begin{center}
+      .
+    \end{center}
+  \end{block}
+\end{frame}
+
+\end{document}

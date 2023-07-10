@@ -1,0 +1,52 @@
+\newcommand{\Vec}[1]{\overline{#1}}
+\newcommand{\KWLet}{\textbf{let }}
+\newcommand{\KWIn}{\textbf{ in }}
+\newcommand{\Fresh}{\text{fresh }}
+\newcommand{\HMLet}{
+  \infer[\text{Let}]{
+    Γ ⊢ \KWLet x = e\KWIn e′ : τ′
+  }{
+    Γ ⊢ e : σ
+    & Γ, x : σ ⊢ e′ : τ′
+  }
+}
+\newcommand{\HMIntro}{
+  \infer[∀ \ \text{Intro}]{
+    Γ ⊢ e : ∀α. σ
+  }{
+    Γ ⊢ e : σ
+    & \Fresh α
+  }
+}
+\newcommand{\HMElim}{
+  \infer[∀ \ \text{Elim}]{
+    Γ ⊢ e : σ
+  }{
+    Γ ⊢ e : σ′
+    & σ′ ⊑ σ
+  }
+}
+\newcommand{\HMXLet}{
+  \infer[\text{Let}]{
+    C, Γ ⊢ \KWLet x = e\KWIn e′ : τ′
+  }{
+    C, Γ ⊢ e : σ
+    & C, (Γ, x : σ) ⊢ e′ : τ′
+  }
+}
+\newcommand{\HMXIntro}{
+  \infer[∀ \ \text{Intro}]{
+    C ∧ ∃\Vec α.D, Γ ⊢ e : ∀ \Vec α.D ⇒ τ
+  }{
+    C ∧ D, Γ ⊢ e : τ
+    & \Fresh \Vec α
+  }
+}
+\newcommand{\HMXElim}{
+  \infer[∀ \ \text{Elim}]{
+    C, Γ ⊢ e : [\Vec τ / \Vec α] τ′
+  }{
+    C, Γ ⊢ e : ∀ \Vec α.D ⇒ τ′
+    & C ⊢ᵉ [\Vec τ / \Vec α]D
+  }
+}
