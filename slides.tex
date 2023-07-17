@@ -11,11 +11,10 @@
 \usepackage{minted}
 \AtBeginEnvironment{minted}{%
   \renewcommand{\fcolorbox}[4][]{#4}}
+\usepackage[backend=biber]{biblatex}
+\addbibresource{references.bib}
 
-\newfontfamily\substitutefont{CMU Serif}
-\setTransitionsForGreek{\begingroup\substitutefont}{\endgroup}
-
-\title{HM($X$): Type Inference with Constraint Types}
+\title{HM($X$): Type Inference with Constraint Types $^{\text{\cite{hmx}}}$}
 \institute[Uni Freiburg]{Chair of Programming Languages, University of
   Freiburg}
 \author{Marius Weidner}
@@ -37,22 +36,33 @@
 \begin{frame}[fragile]
   \frametitle{Hindley Milner Basics}
   \begin{columns}
-    \begin{column}{0.3\textwidth}
+    \begin{column}{0.38\textwidth}
       \begin{center}
         \begin{itemize}
           \item Let Polymorphism
           \item Full Type Inference
           \item Principle Type Property
+                \begin{itemize}
+                  \item most general type is inferred
+                \end{itemize}
         \end{itemize}
       \end{center}
     \end{column}
     \begin{column}{0.6\textwidth}
       \begin{center}
-        \begin{block}{Pseudocode Example}
-          \begin{minted}{ocaml}
-let id = λx. x in         :: α → α 
-id 42                     :: Int
-id "Hello World"          :: Str
+        \begin{block}{Example: Polymorphic Identity Function}
+          \begin{minted}[escapeinside=||, mathescape = true]{ocaml}
+let id = |$\symbf λ$|x. x in    : |$\textcolor{blue}{\symbf{∀α. α → α}}$| 
+id 42                : Int
+id "Hello World"     : Str
+          \end{minted}
+        \end{block}
+      \end{center}
+      \begin{center}
+        \begin{block}{Example: Polymorphic List Constructors}
+          \begin{minted}[escapeinside=||, mathescape = true]{ocaml}
+let nil = ..  : |$\textcolor{blue}{\symbf{∀α. α →}}$| |\textcolor{blue}{\textbf{List}}| |$\textcolor{blue}{\symbf{α}}$| 
+let cons = .. : |$\textcolor{blue}{\symbf{∀α. α → α →}}$| |\textcolor{blue}{\textbf{List}}| |$\textcolor{blue}{\symbf{α →}}$| |\textcolor{blue}{\textbf{List}}| |$\textcolor{blue}{\symbf{α}}$| 
           \end{minted}
         \end{block}
       \end{center}
@@ -60,16 +70,18 @@ id "Hello World"          :: Str
   \end{columns}
 \end{frame}
 
+\begingroup
+\Large
 \begin{frame}[fragile]
   \frametitle{Hindley Milner Syntax}
   \begin{columns}
     \begin{column}{0.45\textwidth}
-      \begin{center}
-        $e \ ∷= \ x \\ \quad\quad\quad \quad | \
-          λx. e \\ \quad\quad\quad \  | \
-          e \ e  \\ \quad\quad\quad\quad\quad\quad\quad\quad\quad \ | \
-          \KWLet x = e \KWIn e$
-      \end{center}
+      \begin{align*}
+        e \ ∷= & \ \ x                    \\
+               & | \ λx. e                \\
+               & | \ e \ e                \\
+               & | \ \KWLet x = e \KWIn e
+      \end{align*}
     \end{column}
     \begin{column}{0.45\textwidth}
       \begin{center}
@@ -81,13 +93,21 @@ id "Hello World"          :: Str
     \end{column}
   \end{columns}
 \end{frame}
+\endgroup
 
+\begingroup
+\Large
 \begin{frame}[fragile]
   \frametitle{Hindley Milner Typing}
   \begin{columns}
     \begin{column}{0.45\textwidth}
       \begin{center}
         \HMLet
+      \end{center}
+      \begin{center}
+        \begin{block}{Example: Instance Relation}
+          $∀α. α → α \ \ ⊑ \ \ $ Int $→$ Int
+        \end{block}
       \end{center}
     \end{column}
     \begin{column}{0.45\textwidth}
@@ -100,29 +120,124 @@ id "Hello World"          :: Str
     \end{column}
   \end{columns}
 \end{frame}
+\endgroup
+
+\begingroup
+\large
+\begin{frame}[fragile]
+  \frametitle{Outlook: A Program with Constraint Types}
+  \begin{center}
+    \begin{block}{Example: Record Subtyping Constraints}
+      \begin{minted}[escapeinside=||, mathescape = true]{ocaml}
+let max = |$\symbf λ$|r|$₁$|. |$\symbf λ$|r|$₂$|.         : |$\textcolor{blue}{\symbf{∀α.}}(α ≤$|{key:|\textcolor{blue}{\textbf{Int}}|}|$)\textcolor{blue}{\symbf{∀β.}}(β ≤$|{key:|\textcolor{blue}{Int}|}|$) \ \textcolor{blue}{\symbf{ ⇒}}$|
+  r|$₁$|.key |$≥$| r|$₂$|.key in           |$\textcolor{blue}{\symbf{α → β →}}$| Bool
+max {key = 17, foo = "bar"} : Bool
+    {key = 42, bar = "foo"}
+          \end{minted}
+    \end{block}
+  \end{center}
+\end{frame}
+\endgroup
 
 \section{Constraint Systems: Formulate Constraints on Types}
 
+\begingroup
+\Large
 \begin{frame}[fragile]
-  \frametitle{}
-  \begin{block}{}
-    \begin{center}
-      .
-    \end{center}
-  \end{block}
+  \frametitle{Constraint Syntax}
+  \begin{align*}
+    C \ ∷= & \ \ ⊥     \\
+           & | \ ⊤     \\
+           & | \ C ∧ C \\
+           & | \ ∃α. C \\
+           & | \ τ = τ \\
+           & | \ ⋯
+  \end{align*}
+\end{frame}
+\endgroup
+
+\begin{frame}[fragile]
+  \frametitle{Constraint Conditions}
+  \begin{columns}
+    \begin{column}{0.45\textwidth}
+      \begin{block}{Entailment}
+        \setlength\abovedisplayskip{0pt}
+        \begin{align*}
+          C ⊢ D & \text{ iff } C \text{ implies } D \\
+          C = D & \text{ iff } C ⊢ D ∧ D ⊢ C        \\
+          ⊢C    & \text{ iff } ⊤ ⊢ C
+        \end{align*}
+      \end{block}
+      \begin{block}{Existential Quantification}
+        \setlength\abovedisplayskip{0pt}
+        \begin{align*}
+          C             & ⊢ ∃α. C                      \\
+          C ⊢ D         & \text{ implies } ∃α.C ⊢ ∃α.D \\
+          ∃α.(C ∧ ∃α.D) & = ∃α.C ∧ ∃α.D                \\
+          ∃α. ∃β.C      & = ∃β. ∃α.C
+        \end{align*}
+      \end{block}
+    \end{column}
+    \begin{column}{0.48\textwidth}
+      \begin{block}{Equality}
+        \setlength\abovedisplayskip{0pt}
+        \begin{align*}
+                            & ⊢ (α = α) \\
+          (α = β)           & ⊢ (β = α) \\
+          (α = β) ∧ (β = γ) & ⊢ (α = γ)
+        \end{align*}
+      \end{block}
+      \begin{block}{Substitution}
+        \setlength\abovedisplayskip{0pt}
+        \begin{align*}
+          (τ = τ′)                & ⊢ (Τ[τ] = Τ[τ′])                      \\
+          [τ/α]C = ∃α.C ∧ (α = τ) & \text{ for } α \text{ not free in } τ
+        \end{align*}
+      \end{block}
+    \end{column}
+  \end{columns}
 \end{frame}
 
-\section{HM($X$): HM Parametrized over Constraint Systems $X$}
+\begingroup
+\large
+\begin{frame}[fragile]
+  \frametitle{Solved Form}
+  \begin{columns}
+    \begin{column}{0.6\textwidth}
+      \begin{block}{Satisfiability}
+        \setlength\abovedisplayskip{0pt}
+        \begin{align*}
+          sat(C) \text{ iff } ⊢ ∃\Vec α.C \text{ for } \Vec α \text{ free in }
+          C
+        \end{align*}
+      \end{block}
+      \begin{block}{Constraints in Solved Form}
+        \setlength\abovedisplayskip{0pt}
+        \begin{align*}
+          C & ∈ 𝓢 \text{ implies } sat(C)                               \\
+          C & ∈ 𝓢 \text{ and } C ⊢ (τ = τ′) \text{ implies } ⊢ (τ = τ′) \\
+          C & ∈ 𝓢 \text{ implies } ∃α.C ∈ 𝓢
+        \end{align*}
+      \end{block}
+    \end{column}
+  \end{columns}
+\end{frame}
+\endgroup
 
+\begingroup
+\Large
+\section{HM($X$): HM Parametrized over Constraint Systems $X$}
 \begin{frame}[fragile]
   \frametitle{HM($X$) Syntax}
   \begin{columns}
     \begin{column}{0.45\textwidth}
       \begin{center}
-        $C \ ∷= \ x \\ \quad\quad\quad \quad | \
-          λx. e \\ \quad\quad\quad \  | \
-          e \ e  \\ \quad\quad\quad\quad\quad\quad\quad\quad\quad \ | \
-          \KWLet x = e \KWIn e$
+        \begin{align*}
+          e \ ∷= & \ x                      \\
+                 & | \ λx. e                \\
+                 & | \ e \ e                \\
+                 & | \ \KWLet x = e \KWIn e
+        \end{align*}
       \end{center}
     \end{column}
     \begin{column}{0.45\textwidth}
@@ -130,11 +245,13 @@ id "Hello World"          :: Str
         $τ \ ∷= \ α \ | \ τ → τ$
       \end{center}
       \begin{center}
-        $σ \ ∷= \ τ \ | \ ∀α.C ⇒ σ$
+        $σ \ ∷= \ τ \ | \ \textcolor{blue}{∀\Vec α.C ⇒ τ} \text{ for } C ∈ 𝓢$
       \end{center}
     \end{column}
   \end{columns}
 \end{frame}
+\endgroup
+
 
 \begin{frame}[fragile]
   \frametitle{HM($X$) Typing}
@@ -142,6 +259,9 @@ id "Hello World"          :: Str
     \begin{column}{0.45\textwidth}
       \begin{center}
         \HMXLet
+      \end{center}
+      \begin{center}
+        \HMXEq
       \end{center}
     \end{column}
     \begin{column}{0.45\textwidth}
@@ -155,28 +275,50 @@ id "Hello World"          :: Str
   \end{columns}
 \end{frame}
 
-
-
-\section{HM($\mathcal{R}$): Instantiating HM($X$) with Polymorphic Records}
+\section{HM($𝓡$): Instantiating HM($X$) with Polymorphic Records}
 
 \begin{frame}[fragile]
-  \frametitle{}
-  \begin{block}{}
-    \begin{center}
-      .
-    \end{center}
-  \end{block}
+  \frametitle{HM($𝓡$) Syntax}
 \end{frame}
 
-\section{Metatheory: Properties of HM($X$)}
+\begin{frame}[fragile]
+  \frametitle{HM($𝓡$) Constraints}
+\end{frame}
 
 \begin{frame}[fragile]
-  \frametitle{}
-  \begin{block}{}
-    \begin{center}
-      .
-    \end{center}
-  \end{block}
+  \frametitle{HM($𝓡$) Advanced Example}
+\end{frame}
+
+\section{Meta Theory \& Conclusion: Properties of HM($X$) and beyond HM($X$)}
+
+\begingroup
+\large
+\begin{frame}[fragile]
+  \frametitle{Meta Theoretical Properties \& Outlook}
+  \begin{itemize}
+    \item Full Type Inference: HM($X$) comes with a type inference algorithm
+          that
+          \begin{itemize}
+            \item solves typing problems by translating them to constraint
+                  problems
+            \item preserves the \emph{principal type property}, if $X$ fulfills
+                  the \emph{principal constraint property}
+          \end{itemize}
+    \item Type Soundness: HM($X$) is sound, i.e. all valid typing judgements
+          \\ \quad $C, Γ ⊢ e : σ$ where $sound(C)$ imply \\
+          \quad $e ↪ e′ ∨ val(e)$ (\emph{progress}) and
+          $e ↪ e′ → C, Γ ⊢ e′ : σ$ (\emph{subject reduction})
+          $^{\text{\cite{sts}}}$
+    \item SHM($X$): extension with subtyping constraint $τ ≤ τ′$, \\
+          \quad small extension to type inference algorithm required
+  \end{itemize}
+\end{frame}
+\endgroup
+
+\begin{frame}[fragile]
+  \frametitle{References}
+  \nocite{atapl}
+  \printbibliography
 \end{frame}
 
 \end{document}

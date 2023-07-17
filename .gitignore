@@ -8,5 +8,10 @@
 *.toc
 *.vrb
 *.xdv
+*.xml
+slides-*.bib
+*.bbl
+*.blg
+*.bcf
 _minted*
 *.agdai

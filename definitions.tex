@@ -1,7 +1,5 @@
-\newcommand{\Vec}[1]{\overline{#1}}
 \newcommand{\KWLet}{\textbf{let }}
 \newcommand{\KWIn}{\textbf{ in }}
-\newcommand{\Fresh}{\text{fresh }}
 \newcommand{\HMLet}{
   \infer[\text{Let}]{
     Γ ⊢ \KWLet x = e\KWIn e′ : τ′
@@ -15,7 +13,7 @@
     Γ ⊢ e : ∀α. σ
   }{
     Γ ⊢ e : σ
-    & \Fresh α
+    & α ∉ free(Γ)
   }
 }
 \newcommand{\HMElim}{
@@ -28,25 +26,33 @@
 }
 \newcommand{\HMXLet}{
   \infer[\text{Let}]{
-    C, Γ ⊢ \KWLet x = e\KWIn e′ : τ′
+    \textcolor{blue}{C,}\ Γ ⊢ \KWLet x = e\KWIn e′ : τ′
   }{
-    C, Γ ⊢ e : σ
-    & C, (Γ, x : σ) ⊢ e′ : τ′
+    \textcolor{blue}{C,}\ Γ ⊢ e : σ
+    & \textcolor{blue}{C,}\ (Γ, x : σ) ⊢ e′ : τ′
+  }
+}
+\newcommand{\HMXEq}{
+  \infer[\text{\textcolor{blue}{Eq}}]{
+    C,\ Γ ⊢ e : τ′
+  }{
+    C,\ Γ ⊢ e : τ
+    & ⊢ (τ = τ′)
   }
 }
 \newcommand{\HMXIntro}{
   \infer[∀ \ \text{Intro}]{
-    C ∧ ∃\Vec α.D, Γ ⊢ e : ∀ \Vec α.D ⇒ τ
+    \textcolor{blue}{C ∧ ∃\Vec α.D,}\ Γ ⊢ e : ∀ \Vec α.D ⇒ τ
   }{
-    C ∧ D, Γ ⊢ e : τ
-    & \Fresh \Vec α
+    \textcolor{blue}{C ∧ D,}\ Γ ⊢ e : τ
+    & \Vec α ∉ free(Γ) \ \textcolor{blue}{∪ \ free(C)}
   }
 }
 \newcommand{\HMXElim}{
   \infer[∀ \ \text{Elim}]{
-    C, Γ ⊢ e : [\Vec τ / \Vec α] τ′
+    \textcolor{blue}{C,} \ Γ ⊢ e : [\Vec τ / \Vec α] τ′
   }{
-    C, Γ ⊢ e : ∀ \Vec α.D ⇒ τ′
-    & C ⊢ᵉ [\Vec τ / \Vec α]D
+    \textcolor{blue}{C,}\ Γ ⊢ e : ∀ \Vec α.D ⇒ τ′
+    & \textcolor{blue}{C ⊢ᵉ [\Vec τ / \Vec α]D}
   }
 }
