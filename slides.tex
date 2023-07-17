@@ -85,10 +85,16 @@ let cons = .. : |$\textcolor{blue}{\symbf{∀α. α → α →}}$| |\textcolor{b
     \end{column}
     \begin{column}{0.45\textwidth}
       \begin{center}
-        $τ \ ∷= \ α \ | \ τ → τ$
+        \begin{align*}
+          τ \ ∷= & \ \ α     \\
+                 & | \ τ → τ
+        \end{align*}
       \end{center}
       \begin{center}
-        $σ \ ∷= \ τ \ | \ ∀α. σ$
+        \begin{align*}
+          σ \ ∷= & \ \ τ     \\
+                 & | \ ∀α. σ
+        \end{align*}
       \end{center}
     \end{column}
   \end{columns}
@@ -129,9 +135,9 @@ let cons = .. : |$\textcolor{blue}{\symbf{∀α. α → α →}}$| |\textcolor{b
   \begin{center}
     \begin{block}{Example: Record Subtyping Constraints}
       \begin{minted}[escapeinside=||, mathescape = true]{ocaml}
-let max = |$\symbf λ$|r|$₁$|. |$\symbf λ$|r|$₂$|.         : |$\textcolor{blue}{\symbf{∀α.}}(α ≤$|{key:|\textcolor{blue}{\textbf{Int}}|}|$)\textcolor{blue}{\symbf{∀β.}}(β ≤$|{key:|\textcolor{blue}{Int}|}|$) \ \textcolor{blue}{\symbf{ ⇒}}$|
+let max = |$\symbf λ$|r|$₁$|. |$\symbf λ$|r|$₂$|.           : |$\textcolor{blue}{\symbf{∀α.}}(\textcolor{blue}{\symbf{α}} ≤$|{key:|\textcolor{blue}{\textbf{Int}}|}|$)\textcolor{blue}{\symbf{∀β.}}(\textcolor{blue}{\symbf{β}} ≤$|{key:|\textcolor{blue}{Int}|}|$) \ \textcolor{blue}{\symbf{ ⇒}}$|
   r|$₁$|.key |$≥$| r|$₂$|.key in           |$\textcolor{blue}{\symbf{α → β →}}$| Bool
-max {key = 17, foo = "bar"} : Bool
+max {key = 17, foo = "bar"}   : Bool
     {key = 42, bar = "foo"}
           \end{minted}
     \end{block}
@@ -242,16 +248,21 @@ max {key = 17, foo = "bar"} : Bool
     \end{column}
     \begin{column}{0.45\textwidth}
       \begin{center}
-        $τ \ ∷= \ α \ | \ τ → τ$
+        \begin{align*}
+          τ \ ∷= & \ α       \\
+                 & | \ τ → τ
+        \end{align*}
       \end{center}
       \begin{center}
-        $σ \ ∷= \ τ \ | \ \textcolor{blue}{∀\Vec α.C ⇒ τ} \text{ for } C ∈ 𝓢$
+        \begin{align*}
+          σ \ ∷= & \ τ                                                    \\
+                 & | \ \textcolor{blue}{∀\Vec α.C ⇒ τ} \text{ for } C ∈ 𝓢
+        \end{align*}
       \end{center}
     \end{column}
   \end{columns}
 \end{frame}
 \endgroup
-
 
 \begin{frame}[fragile]
   \frametitle{HM($X$) Typing}
@@ -277,16 +288,100 @@ max {key = 17, foo = "bar"} : Bool
 
 \section{HM($𝓡$): Instantiating HM($X$) with Polymorphic Records}
 
+\begingroup
+\Large
+\section{HM($𝓡$) Syntax Extensions}
 \begin{frame}[fragile]
-  \frametitle{HM($𝓡$) Syntax}
+  \frametitle{HM($X$) Syntax}
+  \begin{columns}
+    \begin{column}{0.45\textwidth}
+      \begin{center}
+        \begin{align*}
+          e \ ∷= & \ \dots                            \\
+                 & | \ \{lᵢ = eᵢ\} \text{ for } i ∈ ℕ \\
+                 & | \ e.l
+        \end{align*}
+      \end{center}
+    \end{column}
+    \begin{column}{0.45\textwidth}
+      \begin{center}
+        \begin{align*}
+          τ \ ∷= & \ \dots                            \\
+                 & | \ \{lᵢ : τᵢ\} \text{ for } i ∈ ℕ
+        \end{align*}
+      \end{center}
+    \end{column}
+  \end{columns}
+  \begin{center}
+    \begin{align*}
+      c \ ∷= & \ \dots            \\
+             & | \ τ ≤ \{l : τ′\}
+    \end{align*}
+  \end{center}
 \end{frame}
 
+\endgroup
 \begin{frame}[fragile]
-  \frametitle{HM($𝓡$) Constraints}
+  \frametitle{HM($𝓡$) Constraint Conditions}
+  \begin{columns}
+    \begin{column}{0.5\textwidth}
+      \begin{block}{Subtyping}
+        \setlength\abovedisplayskip{0pt}
+        \begin{align*}
+          ⊢ \{l₁ : τ₁, .., lₙ : τₙ\}           & ≤ \{lᵢ : τᵢ\} \\
+          τ ≤ \{l : τ₁\} ∧ τ ≤ \{l : τ₂\}      & ⊢ τ₁ = τ₂     \\
+          \{.., l : τ₁, ..\} ≤ \{l : τ₂\}      & ⊢ τ₁ = τ₂     \\
+          \{l₁ : τ₁, .., lₙ : τₙ\} ≤ \{l : τ\} & ⊢ ⊥
+        \end{align*}
+      \end{block}
+      \begin{block}{Restrict Recusion}
+        \setlength\abovedisplayskip{0pt}
+        \begin{align*}
+          ∃α. α ≤ \{l : τ\} & = ⊤ \text{ for } α \text{ not free in } τ \\
+          ∃α. α ≤ \{l : τ\} & = ⊥ \text{ for } α \text{ free in } τ
+        \end{align*}
+      \end{block}
+    \end{column}
+    \begin{column}{0.4\textwidth}
+      \begin{block}{Ordering}
+        \setlength\abovedisplayskip{0pt}
+        \begin{align*}
+          ⊢ & \{lᵢ : τᵢ\} = \{l_{π(i)} : τ_{π(i)}\}   \\
+            & \text{ where } π \text{ is permutation}
+        \end{align*}
+      \end{block}
+      \begin{block}{Solved Form}
+        \setlength\abovedisplayskip{0pt}
+        \begin{align*}
+          τ & ≤ \{l : τ\} ∈ 𝓢 \text{ implies } τ = α             \\
+            & \text{ where } α ≤ \{l : τ\} \text{ non-recursive}
+        \end{align*}
+      \end{block}
+    \end{column}
+  \end{columns}
 \end{frame}
 
 \begin{frame}[fragile]
   \frametitle{HM($𝓡$) Advanced Example}
+  \begin{columns}
+    \begin{column}{0.85\textwidth}
+      \begin{center}
+        \begin{block}{Example: Nested Record Subtyping Constraints}
+          \begin{minted}[escapeinside=||, mathescape = true]{ocaml}
+let unwrap = |$\symbf λ$|r.        : |$\textcolor{blue}{\symbf{∀α.∃β}}(\textcolor{blue}{\symbf{α}} ≤$|{outer:|$\textcolor{blue}{\symbf{β}}$|}|$ ∧ \textcolor{blue}{\symbf{β}} ≤$|{inner:|\textcolor{blue}{Int}|}|$) \ \textcolor{blue}{\symbf{ ⇒}}$|
+  r.outer.inner in           |$\textcolor{blue}{\symbf{α → }}$| Int
+unwrap {                : Int
+  outer = {
+    inner = 42, 
+    bar = "foo"
+  }, 
+  foo = "bar"
+} 
+          \end{minted}
+        \end{block}
+      \end{center}
+    \end{column}
+  \end{columns}
 \end{frame}
 
 \section{Meta Theory \& Conclusion: Properties of HM($X$) and beyond HM($X$)}
