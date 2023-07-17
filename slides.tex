@@ -136,7 +136,7 @@ let cons = .. : |$\textcolor{blue}{\symbf{∀α. α → α →}}$| |\textcolor{b
     \begin{block}{Example: Record Subtyping Constraints}
       \begin{minted}[escapeinside=||, mathescape = true]{ocaml}
 let max = |$\symbf λ$|r|$₁$|. |$\symbf λ$|r|$₂$|.           : |$\textcolor{blue}{\symbf{∀α.}}(\textcolor{blue}{\symbf{α}} ≤$|{key:|\textcolor{blue}{\textbf{Int}}|}|$)\textcolor{blue}{\symbf{∀β.}}(\textcolor{blue}{\symbf{β}} ≤$|{key:|\textcolor{blue}{Int}|}|$) \ \textcolor{blue}{\symbf{ ⇒}}$|
-  r|$₁$|.key |$≥$| r|$₂$|.key in           |$\textcolor{blue}{\symbf{α → β →}}$| Bool
+  r|$₁$|.key |$≥$| r|$₂$|.key in             |$\textcolor{blue}{\symbf{α → β →}}$| Bool
 max {key = 17, foo = "bar"}   : Bool
     {key = 42, bar = "foo"}
           \end{minted}
@@ -369,7 +369,7 @@ max {key = 17, foo = "bar"}   : Bool
         \begin{block}{Example: Nested Record Subtyping Constraints}
           \begin{minted}[escapeinside=||, mathescape = true]{ocaml}
 let unwrap = |$\symbf λ$|r.        : |$\textcolor{blue}{\symbf{∀α.∃β}}(\textcolor{blue}{\symbf{α}} ≤$|{outer:|$\textcolor{blue}{\symbf{β}}$|}|$ ∧ \textcolor{blue}{\symbf{β}} ≤$|{inner:|\textcolor{blue}{Int}|}|$) \ \textcolor{blue}{\symbf{ ⇒}}$|
-  r.outer.inner in           |$\textcolor{blue}{\symbf{α → }}$| Int
+  r.outer.inner in         |$\textcolor{blue}{\symbf{α → }}$| Int
 unwrap {                : Int
   outer = {
     inner = 42, 
