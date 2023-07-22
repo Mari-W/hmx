@@ -10,18 +10,17 @@
 }
 \newcommand{\HMIntro}{
   \infer[∀ \ \text{Intro}]{
-    Γ ⊢ e : ∀α. σ
+    Γ ⊢ e : ∀ \Vec α. τ
   }{
-    Γ ⊢ e : σ
-    & α ∉ free(Γ)
+    Γ ⊢ e : τ
+    & \Vec α ∉ free(Γ)
   }
 }
 \newcommand{\HMElim}{
   \infer[∀ \ \text{Elim}]{
-    Γ ⊢ e : σ
+    Γ ⊢ e : [\Vec τ/ \Vec α]τ
   }{
-    Γ ⊢ e : σ′
-    & σ′ ⊑ σ
+    Γ ⊢ e : ∀\Vec α. τ
   }
 }
 \newcommand{\HMXLet}{

@@ -93,7 +93,7 @@ let cons = .. : |$\textcolor{blue}{\symbf{∀α. α → α →}}$| |\textcolor{b
       \begin{center}
         \begin{align*}
           σ \ ∷= & \ \ τ     \\
-                 & | \ ∀α. σ
+                 & | \ ∀ \Vec α . τ
         \end{align*}
       \end{center}
     \end{column}
@@ -110,11 +110,11 @@ let cons = .. : |$\textcolor{blue}{\symbf{∀α. α → α →}}$| |\textcolor{b
       \begin{center}
         \HMLet
       \end{center}
-      \begin{center}
-        \begin{block}{Example: Instance Relation}
-          $∀α. α → α \ \ ⊑ \ \ $ Int $→$ Int
-        \end{block}
-      \end{center}
+      % \begin{center}
+      %   \begin{block}{Example: Instance Relation}
+      %     $∀α. α → α \ \ ⊑ \ \ $ Int $→$ Int
+      %   \end{block}
+      % \end{center}
     \end{column}
     \begin{column}{0.45\textwidth}
       \begin{center}
@@ -256,7 +256,7 @@ max {key = 17, foo = "bar"}   : Bool
       \begin{center}
         \begin{align*}
           σ \ ∷= & \ τ                                                    \\
-                 & | \ \textcolor{blue}{∀\Vec α.C ⇒ τ} \text{ for } C ∈ 𝓢
+                 & | \ ∀\Vec α.\textcolor{blue}{C ⇒} τ \text{ for } C ∈ 𝓢
         \end{align*}
       \end{center}
     \end{column}
@@ -313,7 +313,7 @@ max {key = 17, foo = "bar"}   : Bool
   \end{columns}
   \begin{center}
     \begin{align*}
-      c \ ∷= & \ \dots            \\
+      C \ ∷= & \ \dots            \\
              & | \ τ ≤ \{l : τ′\}
     \end{align*}
   \end{center}
@@ -346,14 +346,14 @@ max {key = 17, foo = "bar"}   : Bool
         \setlength\abovedisplayskip{0pt}
         \begin{align*}
           ⊢ & \{lᵢ : τᵢ\} = \{l_{π(i)} : τ_{π(i)}\}   \\
-            & \text{ where } π \text{ is permutation}
+            & \text{ where } π \text{ is a permutation}
         \end{align*}
       \end{block}
       \begin{block}{Solved Form}
         \setlength\abovedisplayskip{0pt}
         \begin{align*}
-          τ & ≤ \{l : τ\} ∈ 𝓢 \text{ implies } τ = α             \\
-            & \text{ where } α ≤ \{l : τ\} \text{ non-recursive}
+          α &≤ \{l : τ\} ∈ 𝓢 \\ 
+          & \text{ when } α ≤ \{l : τ\} \text{ non-recursive}
         \end{align*}
       \end{block}
     \end{column}
