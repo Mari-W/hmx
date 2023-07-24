@@ -61,8 +61,8 @@ id "Hello World"     : Str
       \begin{center}
         \begin{block}{Example: Polymorphic List Constructors}
           \begin{minted}[escapeinside=||, mathescape = true]{ocaml}
-let nil = ..  : |$\textcolor{blue}{\symbf{∀α. α →}}$| |\textcolor{blue}{\textbf{List}}| |$\textcolor{blue}{\symbf{α}}$| 
-let cons = .. : |$\textcolor{blue}{\symbf{∀α. α → α →}}$| |\textcolor{blue}{\textbf{List}}| |$\textcolor{blue}{\symbf{α →}}$| |\textcolor{blue}{\textbf{List}}| |$\textcolor{blue}{\symbf{α}}$| 
+let nil = ..  : |$\textcolor{blue}{\symbf{∀α. }}$| |\textcolor{blue}{\textbf{List}}| |$\textcolor{blue}{\symbf{α}}$| 
+let cons = .. : |$\textcolor{blue}{\symbf{∀α. α →}}$| |\textcolor{blue}{\textbf{List}}| |$\textcolor{blue}{\symbf{α →}}$| |\textcolor{blue}{\textbf{List}}| |$\textcolor{blue}{\symbf{α}}$| 
           \end{minted}
         \end{block}
       \end{center}
@@ -131,13 +131,13 @@ let cons = .. : |$\textcolor{blue}{\symbf{∀α. α → α →}}$| |\textcolor{b
 \begingroup
 \large
 \begin{frame}[fragile]
-  \frametitle{Outlook: A Program with Constraint Types}
+  \frametitle{A Program with Constraint Types}
   \begin{center}
     \begin{block}{Example: Record Subtyping Constraints}
       \begin{minted}[escapeinside=||, mathescape = true]{ocaml}
-let max = |$\symbf λ$|r|$₁$|. |$\symbf λ$|r|$₂$|.           : |$\textcolor{blue}{\symbf{∀α.}}(\textcolor{blue}{\symbf{α}} ≤$|{key:|\textcolor{blue}{\textbf{Int}}|}|$)\textcolor{blue}{\symbf{∀β.}}(\textcolor{blue}{\symbf{β}} ≤$|{key:|\textcolor{blue}{Int}|}|$) \ \textcolor{blue}{\symbf{ ⇒}}$|
+let gte = |$\symbf λ$|r|$₁$|. |$\symbf λ$|r|$₂$|.           : |$\textcolor{blue}{\symbf{∀α, β.}}(\textcolor{blue}{\symbf{α}} ≤$|{key:|\textcolor{blue}{\textbf{Int}}|}|$ ∧ \textcolor{blue}{\symbf{β}} ≤$|{key:|\textcolor{blue}{\textbf{Int}}|}|$) \ \textcolor{blue}{\symbf{ ⇒}}$|
   r|$₁$|.key |$≥$| r|$₂$|.key in             |$\textcolor{blue}{\symbf{α → β →}}$| Bool
-max {key = 17, foo = "bar"}   : Bool
+gte {key = 17, foo = "bar"} : Bool
     {key = 42, bar = "foo"}
           \end{minted}
     \end{block}
@@ -165,7 +165,7 @@ max {key = 17, foo = "bar"}   : Bool
 \begin{frame}[fragile]
   \frametitle{Constraint Conditions}
   \begin{columns}
-    \begin{column}{0.45\textwidth}
+    \begin{column}{0.48\textwidth}
       \begin{block}{Entailment}
         \setlength\abovedisplayskip{0pt}
         \begin{align*}
@@ -174,6 +174,15 @@ max {key = 17, foo = "bar"}   : Bool
           ⊢C    & \text{ iff } ⊤ ⊢ C
         \end{align*}
       \end{block}
+      \begin{block}{Substitution}
+        \setlength\abovedisplayskip{0pt}
+        \begin{align*}
+          % (τ = τ′)                & ⊢ (Τ[τ] = Τ[τ′])                      \\
+          [τ/α]C = ∃α.C ∧ (α = τ) & \text{ for } α \text{ not free in } τ
+        \end{align*}
+      \end{block}
+    \end{column}
+    \begin{column}{0.45\textwidth}
       \begin{block}{Existential Quantification}
         \setlength\abovedisplayskip{0pt}
         \begin{align*}
@@ -181,23 +190,6 @@ max {key = 17, foo = "bar"}   : Bool
           C ⊢ D         & \text{ implies } ∃α.C ⊢ ∃α.D \\
           ∃α.(C ∧ ∃α.D) & = ∃α.C ∧ ∃α.D                \\
           ∃α. ∃β.C      & = ∃β. ∃α.C
-        \end{align*}
-      \end{block}
-    \end{column}
-    \begin{column}{0.48\textwidth}
-      \begin{block}{Equality}
-        \setlength\abovedisplayskip{0pt}
-        \begin{align*}
-                            & ⊢ (α = α) \\
-          (α = β)           & ⊢ (β = α) \\
-          (α = β) ∧ (β = γ) & ⊢ (α = γ)
-        \end{align*}
-      \end{block}
-      \begin{block}{Substitution}
-        \setlength\abovedisplayskip{0pt}
-        \begin{align*}
-          (τ = τ′)                & ⊢ (Τ[τ] = Τ[τ′])                      \\
-          [τ/α]C = ∃α.C ∧ (α = τ) & \text{ for } α \text{ not free in } τ
         \end{align*}
       \end{block}
     \end{column}
@@ -361,7 +353,7 @@ max {key = 17, foo = "bar"}   : Bool
 \end{frame}
 
 \begin{frame}[fragile]
-  \frametitle{HM($𝓡$) Advanced Example}
+  \frametitle{HM($𝓡$) Example }
   \begin{columns}
     \begin{column}{0.85\textwidth}
       \begin{center}

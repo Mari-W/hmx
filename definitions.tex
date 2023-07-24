@@ -49,9 +49,9 @@
 }
 \newcommand{\HMXElim}{
   \infer[∀ \ \text{Elim}]{
-    \textcolor{blue}{C,} \ Γ ⊢ e : [\Vec τ / \Vec α] τ′
+    \textcolor{blue}{C,} \ Γ ⊢ e : [\Vec τ / \Vec α] τ
   }{
-    \textcolor{blue}{C,}\ Γ ⊢ e : ∀ \Vec α.D ⇒ τ′
+    \textcolor{blue}{C,}\ Γ ⊢ e : ∀ \Vec α.D ⇒ τ
     & \textcolor{blue}{C ⊢ᵉ [\Vec τ / \Vec α]D}
   }
 }
