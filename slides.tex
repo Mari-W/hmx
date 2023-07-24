@@ -137,7 +137,7 @@ let cons = .. : |$\textcolor{blue}{\symbf{∀α. α →}}$| |\textcolor{blue}{\t
       \begin{minted}[escapeinside=||, mathescape = true]{ocaml}
 let gte = |$\symbf λ$|r|$₁$|. |$\symbf λ$|r|$₂$|.           : |$\textcolor{blue}{\symbf{∀α, β.}}(\textcolor{blue}{\symbf{α}} ≤$|{key:|\textcolor{blue}{\textbf{Int}}|}|$ ∧ \textcolor{blue}{\symbf{β}} ≤$|{key:|\textcolor{blue}{\textbf{Int}}|}|$) \ \textcolor{blue}{\symbf{ ⇒}}$|
   r|$₁$|.key |$≥$| r|$₂$|.key in             |$\textcolor{blue}{\symbf{α → β →}}$| Bool
-gte {key = 17, foo = "bar"} : Bool
+gte {key = 17, foo = "bar"}   : Bool
     {key = 42, bar = "foo"}
           \end{minted}
     \end{block}
