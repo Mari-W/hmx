@@ -129,38 +129,6 @@ let cons = .. : |$\textcolor{blue}{\symbf{∀α. α →}}$| |\textcolor{blue}{\t
 \endgroup
 
 \begingroup
-\Large
-\begin{frame}[fragile]
-  \frametitle{HM($𝓡$) Syntax}
-  \begin{columns}
-    \begin{column}{0.45\textwidth}
-      \begin{center}
-        \begin{align*}
-          e \ ∷= & \ \dots                            \\
-                 & | \ \{lᵢ = eᵢ\} \text{ for } i ∈ ℕ \\
-                 & | \ e.l
-        \end{align*}
-      \end{center}
-    \end{column}
-    \begin{column}{0.45\textwidth}
-      \begin{center}
-        \begin{align*}
-          τ \ ∷= & \ \dots                            \\
-                 & | \ \{lᵢ : τᵢ\} \text{ for } i ∈ ℕ
-        \end{align*}
-      \end{center}
-    \end{column}
-  \end{columns}
-  \begin{center}
-    \begin{align*}
-      C \ ∷= & \ \dots            \\
-             & | \ τ ≤ \{l : τ′\}
-    \end{align*}
-  \end{center}
-\end{frame}
-\endgroup
-
-\begingroup
 \large
 \begin{frame}[fragile]
   \frametitle{A Program with Constraint Types}
@@ -312,6 +280,37 @@ gte {key = 17, foo = "bar"}   : Bool
 
 \section{HM($𝓡$): Instantiating HM($X$) with Polymorphic Records}
 
+\begingroup
+\Large
+\begin{frame}[fragile]
+  \frametitle{HM($𝓡$) Syntax}
+  \begin{columns}
+    \begin{column}{0.45\textwidth}
+      \begin{center}
+        \begin{align*}
+          e \ ∷= & \ \dots                            \\
+                 & | \ \{lᵢ = eᵢ\} \text{ for } i ∈ ℕ \\
+                 & | \ e.l
+        \end{align*}
+      \end{center}
+    \end{column}
+    \begin{column}{0.45\textwidth}
+      \begin{center}
+        \begin{align*}
+          τ \ ∷= & \ \dots                            \\
+                 & | \ \{lᵢ : τᵢ\} \text{ for } i ∈ ℕ
+        \end{align*}
+      \end{center}
+    \end{column}
+  \end{columns}
+  \begin{center}
+    \begin{align*}
+      C \ ∷= & \ \dots            \\
+             & | \ τ ≤ \{l : τ′\}
+    \end{align*}
+  \end{center}
+\end{frame}
+\endgroup
 
 \begin{frame}[fragile]
   \frametitle{HM($𝓡$) Constraint Conditions}
