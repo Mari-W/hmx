@@ -1,0 +1,102 @@
+\documentclass[runningheads]{llncs}
+
+\usepackage{graphicx}
+\usepackage{fontspec}
+\usepackage{unicode-math}
+\usepackage[Latin,Greek]{ucharclasses}
+\usepackage{amsmath}
+\usepackage{proof}
+\usepackage{minted}
+\AtBeginEnvironment{minted}{%
+  \renewcommand{\fcolorbox}[4][]{#4}}
+\usepackage[backend=biber]{biblatex}
+\addbibresource{references.bib}
+
+\newfontfamily\substitutefont{CMU Serif}
+\setTransitionsForGreek{\begingroup\substitutefont}{\endgroup}
+
+% chktex-file 36 
+% chktex-file 12
+
+\newcommand{\hmx}{HM($X$)}
+\newcommand{\hmr}{HM($\mathcal{R}$)}
+\newcommand{\hmo}{HM($\mathcal{O}$)}
+
+\title{\includegraphics[width=0.4\textwidth]{logo.png}~\\[1cm] Elaboration on \hmx:\\Type Inference with Constraint Types}
+\titlerunning{\hmx: Type Inference with Constraint Types}
+\institute{Chair of Programming Languages, University of Freiburg \\ \email{weidner@cs.uni-freiburg.de}}
+\author{Marius Weidner}
+
+\begin{document}
+
+\let\oldaddcontentsline\addcontentsline{}
+\def\addcontentsline#1#2#3{}
+\maketitle
+\def\addcontentsline#1#2#3{\oldaddcontentsline{#1}{#2}{#3}}
+
+\begin{abstract}
+  We discuss \hmx{}, a family of type systems that supports polymorphism, full type inference and constraint types. 
+  \hmx{} is a extension to the Hindley-Milner type system, that itself restricts System F such that full type inference is decidable and unambiguous.
+  The constraint system $X$ used in \hmx{} is left abstract and can be instantiated with arbitrary constraint systems that fulfill a set of conditions. 
+  Because of this abstraction \hmx{} can be used to model and reason about many commonly used constraint-like type features. 
+  Examples for constraint-like type features include subtyping, substructural types and type classes. 
+  \hmx{} comes with a complete and sound type inference algorithm, as well as a soundness proof, that both are independent of the actual constraint system $X$.
+  Thus, the work for proving theoretical properties and constructing a inference algorithm for new constraint-like type features in a HM setting is reduced. 
+\end{abstract}
+
+\setcounter{tocdepth}{2}
+\tableofcontents
+\newpage 
+
+\section{Introduction}
+\subsection{Hindley Milner: Polymorphism with Full Type Inference}
+\subsection{Example: A Program with Constraint Types}
+\section{\hmx{}}
+\subsection{Syntax}
+\begin{figure}[t]
+  \centering
+  \caption{Syntax}
+\end{figure}
+\subsection{Typing}
+\begin{figure}[t]
+  \centering
+  \caption{Typing $(C, Γ ⊢ e : σ)$}
+\end{figure}
+\section{Instantiating \hmx{}}
+\subsection{\hmr{}: Extension with Polymorphic Records}
+\subsubsection{Extensions}
+\begin{figure}[t]
+  \centering
+  \caption{Syntax}
+\end{figure}
+\begin{figure}[t]
+  \centering
+  \caption{Constraints}
+\end{figure}
+\subsubsection{Example}
+\subsection{\hmo{}: Extension with Overloading}
+\subsubsection{Extensions}
+\begin{figure}[t]
+  \centering
+  \caption{Syntax}
+\end{figure}
+\begin{figure}[t]
+  \centering
+  \caption{Constraints}
+\end{figure}
+\subsubsection{Example}
+\section{Metatheory}
+\subsection{Soundness}
+\subsection{Type Inference}
+\section{Related Work \& Conclusion}
+\subsection{Related Work}
+\subsection{Conclusion}
+% mention rust and haskell
+
+\nocite{hmx}
+\nocite{sts}
+\nocite{atapl}
+\printbibliography{}
+
+
+\end{document}
