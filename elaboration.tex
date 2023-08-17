@@ -6,11 +6,17 @@
 \usepackage[Latin,Greek]{ucharclasses}
 \usepackage{amsmath}
 \usepackage{proof}
+\usepackage{bigfoot}
 \usepackage{minted}
 \AtBeginEnvironment{minted}{%
   \renewcommand{\fcolorbox}[4][]{#4}}
 \usepackage[backend=biber]{biblatex}
 \addbibresource{references.bib}
+\usepackage{listings}
+\lstset{
+  basicstyle=\ttfamily,
+  mathescape
+}
 
 \newfontfamily\substitutefont{CMU Serif}
 \setTransitionsForGreek{\begingroup\substitutefont}{\endgroup}
@@ -21,10 +27,14 @@
 \newcommand{\hmx}{HM($X$)}
 \newcommand{\hmr}{HM($\mathcal{R}$)}
 \newcommand{\hmo}{HM($\mathcal{O}$)}
+\newcommand{\kwlet}{\textbf{let }}
+\newcommand{\kwin}{\textbf{ in }}
 
-\title{\includegraphics[width=0.4\textwidth]{logo.png}~\\[1cm] Elaboration on \hmx:\\Type Inference with Constraint Types}
+\title{\includegraphics[width=0.4\textwidth]{logo.png}~\\[1cm] Elaboration on
+  \hmx:\\Type Inference with Constraint Types}
 \titlerunning{\hmx: Type Inference with Constraint Types}
-\institute{Chair of Programming Languages, University of Freiburg \\ \email{weidner@cs.uni-freiburg.de}}
+\institute{Chair of Programming Languages, University of Freiburg \\
+  \email{weidner@cs.uni-freiburg.de}}
 \author{Marius Weidner}
 
 \begin{document}
@@ -35,23 +45,150 @@
 \def\addcontentsline#1#2#3{\oldaddcontentsline{#1}{#2}{#3}}
 
 \begin{abstract}
-  We discuss \hmx{}, a family of type systems that supports polymorphism, full type inference and constraint types. 
-  \hmx{} is a extension to the Hindley-Milner type system, that itself restricts System F such that full type inference is decidable and unambiguous.
-  The constraint system $X$ used in \hmx{} is left abstract and can be instantiated with arbitrary constraint systems that fulfill a set of conditions. 
-  Because of this abstraction \hmx{} can be used to model and reason about many commonly used constraint-like type features. 
-  Examples for constraint-like type features include subtyping, substructural types and type classes. 
-  \hmx{} comes with a complete and sound type inference algorithm, as well as a soundness proof, that both are independent of the actual constraint system $X$.
-  Thus, the work for proving theoretical properties and constructing a inference algorithm for new constraint-like type features in a HM setting is reduced. 
+  We investigate \hmx{} [[CITE]], a family of type systems designed to
+  accommodate
+  polymorphism, full type inference and constraint types.
+  \hmx{} extends the Hindley-Milner type system (HM) [[CITE]], which already
+  limits
+  System F, to ensure decidability and unambiguity of full type inference.
+  The constraint system $X$ utilized in \hmx{} remains abstract, allowing
+  instantiating $X$ with arbitrary constraint systems that meet specific
+  criteria.
+  This abstraction empowers \hmx{} to serve as a model for analyzing various
+  constraint-related type features commonly encountered in practice.
+  Notable examples include subtyping, substructural
+  types and type classes.
+  \hmx{} encompasses a sound and complete type inference algorithm that remains
+  independent of the actual constraint system
+  $X$.
+  As a result, the work for proving theoretical properties and designing
+  inference algorithms for novel constraint-based type systems within an
+  HM context is notably simplified.
 \end{abstract}
 
 \setcounter{tocdepth}{2}
 \tableofcontents
-\newpage 
+\newpage
 
 \section{Introduction}
-\subsection{Hindley Milner: Polymorphism with Full Type Inference}
-\subsection{Example: A Program with Constraint Types}
+\subsection{Polymorphism and Full Type Inference in HM}
+The HM type system represents a well known and understood typing discipline
+that
+refines System F [[CITE]] by establishing constraints that allow type inference
+to be decidable.
+HM serves as the foundation for numerous real-world functional programming
+languages, including languages like Haskell and Rust.
+
+In System F, we can introduce variables for both expressions and types.
+The type $∀α. \ T$, where $α$ binds a new type in $T$,
+indicates that an expression of this type is polymorphic over some
+arbitrary type $α$.
+Unfortunately it is undecidable for arbitrary programs to determine when to
+introduce and eliminate $∀$ types and in consequence type inference in System F
+is undecidable [[CITE]].
+% Wells, J.B. (1994). "Typability and type checking in the second-order lambda-calculus are equivalent and undecidable". Proceedings of the 9th Annual IEEE Symposium on Logic in Computer Science (LICS). pp. 176–185. doi:10.1109/LICS.1994.316068. ISBN 0-8186-6310-3. S2CID 15078292.
+In consequence, System F is equipped with explicit type abstraction ($Λα. \ e$)
+and type
+application ($e \ T$) on the syntax level.
+
+The HM type system imposes several restrictions that make type
+inference decidable in a polymorphic context. Moreover, HM ensures that the
+most general type (the \emph{principal type}) of a any given program is
+inferred.
+Consequently, there's no need for extra syntax to introduce or eliminate type
+variables.
+Instead, HM employs let bindings $\kwlet x = e₂ \kwin e₁$ where $e₂$ is the
+only expression that is allowed to have a polymorphic type.
+Other constructs, such as applications or variables bound by a lambda
+abstractions, cannot inherit polymorphic types.
+This constraint is commonly referred to as `let polymorphism'.
+
+In the future, we will label polymorphic types as $σ$, where a $∀$-type exists
+within $σ$, and we will refer to them as `poly types'.
+On the contrary, all other types, including base
+types, functions, and type variables, will be designated as `mono types' and
+denoted as $τ$.
+
+Poly types are further constrained to exclusively permit $∀$ binders at the top
+level.
+Therefore, a type like $∀α. α → ∀α. α$ would not be a valid poly type.
+Consequently, we establish that poly types consistently adhere to the structure
+$∀\bar{α}. \ τ$, where $\bar{α} = α₁,..,αₙ$.
+By upholding these two regulations, that is let polymorphism and the exclusion
+of
+higher-order polymorphism, type inference remains decidable and
+yields a principal type.
+\begin{example}[Concatination of Lists]
+  \begin{lstlisting}
+concat : $∀α.$ $[α] → [α] → [α]$
+concat = $λ$[].      $λ$ys. ys           
+         $λ$[x:xs]. $λ$ys. x : (concat xs ys)   
+  \end{lstlisting}
+\end{example}
+Examples assume the extension of HM with various language features such as
+lists and pattern matching.
+Further, Haskell like notation is used instead of let bindings.
+For convenience some inferred types are given.
+
+In this example, HM would be capable of deducing the type $∀α.[α] → [α] → [α]$
+for the function `concat'.
+This type is in fact the most general type for `concat'.
+
+\subsection{Introducing Constraints on Types}
+Although parametric polymorphism is already a powerful abstraction, there are
+instances where we desire to constrain type variables solely to instantiations
+to types that satisfy specific constraints.
+We refer to such types as \emph{constraint types}.
+Constraints can exhibit various different forms depending on the type features
+present in the actual language.
+As an illustration, consider HM extended with polymorphic records
+(HM$_{\mathcal{R}}$), as outlined
+in [[CITE]].
+In this scenario, it becomes valuable to have the capability to specify that a
+type variable $α$
+should solely be instantiated as a record type containing specific fields.
+\begin{example}[Alternative to Selector Syntax on Records for Field `key']
+  \begin{lstlisting}
+key : $∀β. ∀α.(α ≤ \{$key : $β\})$ $⇒ α → β$
+key = $λ${key : β, ..}. key
+  \end{lstlisting}
+\end{example}
+This example simulates the extraction of a particular field from a record,
+conventionally
+represented as $e.l$ where $l$ denotes a label.
+We simulate the extraction of  the field `key'.
+Instead of the notation $e.key$, the alternative syntax $key \ e$ could then be
+employed. \footnote{In fact, desugaring label syntax as seen in the example
+  forms a component of
+  a transformation from HM$_{\mathcal{R}}$ to a calculus incorporating
+  data types and overloading [[CITE System O Chapter 5]].}
+
+We introduce two type variables, namely $α$ and $β$. While $β$ exhibits
+parametric polymorphism, $α$ functions as a constraint type.
+The constraint imposed on $α$, denoted as $α ≤ \{$key : $β\}$, signifies that
+$α$ is exclusively permitted to take on a type that corresponds to a record
+featuring a `key' field of type $β$.
+For introducing constraints on type variables $α$, we will adopt the notation
+$∀\bar{α}.C$ $⇒ τ$. Multiple constraints will be combined using conjunction.
+
+Naturally, we can envision entirely distinct constraints as well.
+Consider a language with overloading and constraints in the format
+$ident : α → τ$, where an overloaded identifier `ident' with type $α → τ$ is
+expected
+to be present. For instance, consider the overloaded `eq' function designed for
+list equality: $eq : ∀α.(eq : α → α → bool)$ $⇒ [α] → [α] → bool$.
+This formulation allows us to convey that list equality is feasible only when
+the elements of the list can be compared.
+
+A in-depth investigation into both polymorphic records and overloading will be
+undertaken subsequently {{REF 4}}.
+Instead of focusing exclusively on these individual systems, our exploration
+will center on \hmx{}, a HM-based system that remains detached from
+the actual constraint domain $X$.
+Subsequently, we will proceed to instantiate $X$ using the two showcased
+instances of constraints, namely overloading and polymorphic records.
 \section{\hmx{}}
+\subsection{Introduction}
 \subsection{Syntax}
 \begin{figure}[t]
   \centering
@@ -62,6 +199,7 @@
   \centering
   \caption{Typing $(C, Γ ⊢ e : σ)$}
 \end{figure}
+\subsection{Type Inference}
 \section{Instantiating \hmx{}}
 \subsection{\hmr{}: Extension with Polymorphic Records}
 \subsubsection{Extensions}
@@ -97,6 +235,5 @@
 \nocite{sts}
 \nocite{atapl}
 \printbibliography{}
-
 
 \end{document}
