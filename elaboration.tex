@@ -141,15 +141,14 @@ to types that satisfy specific constraints.
 We refer to such types as \emph{constraint types}.
 Constraints can exhibit various different forms depending on the type features
 present in the actual language.
-As an illustration, consider HM extended with polymorphic records
-(HM$_{\mathcal{R}}$), as outlined
-in [[CITE]].
+As an illustration, consider HM$_{\mathcal{R}}$, that is HM extended with
+polymorphic records as outlined in [[CITE]].
 In this scenario, it becomes valuable to have the capability to specify that a
 type variable $α$
 should solely be instantiated as a record type containing specific fields.
 \begin{example}[Alternative to Selector Syntax on Records for Field `key']
   \begin{lstlisting}
-key : $∀β. ∀α.(α ≤ \{$key : $β\})$ $⇒ α → β$
+key : $∀α, β.(α ≤ \{$key : $β\})$ $⇒ α → β$
 key = $λ${key : β, ..}. key
   \end{lstlisting}
 \end{example}
@@ -158,25 +157,27 @@ conventionally
 represented as $e.l$ where $l$ denotes a label.
 We simulate the extraction of  the field `key'.
 Instead of the notation $e.key$, the alternative syntax $key \ e$ could then be
-employed. \footnote{In fact, desugaring label syntax as seen in the example
-  forms a component of
-  a transformation from HM$_{\mathcal{R}}$ to a calculus incorporating
-  data types and overloading [[CITE System O Chapter 5]].}
-
+employed.\footnote{
+  In fact, desugaring label syntax as seen in the example
+  is part of a translation from HM$_{\mathcal{R}}$ to HM$_{\mathcal{O}}$.
+}
 We introduce two type variables, namely $α$ and $β$. While $β$ exhibits
 parametric polymorphism, $α$ functions as a constraint type.
 The constraint imposed on $α$, denoted as $α ≤ \{$key : $β\}$, signifies that
 $α$ is exclusively permitted to take on a type that corresponds to a record
 featuring a `key' field of type $β$.
-For introducing constraints on type variables $α$, we will adopt the notation
-$∀\bar{α}.C$ $⇒ τ$. Multiple constraints will be combined using conjunction.
+For introducing constraint $C$ on type variables $α$, we will adopt the
+notation $∀\bar{α}.C$ $⇒ τ$.
+Multiple constraints will be combined to a single
+constraint using conjunction.
 
-Naturally, we can envision entirely distinct constraints as well.
-Consider a language with overloading and constraints in the format
-$ident : α → τ$, where an overloaded identifier `ident' with type $α → τ$ is
-expected
-to be present. For instance, consider the overloaded `eq' function designed for
-list equality: $eq : ∀α.(eq : α → α → bool)$ $⇒ [α] → [α] → bool$.
+Naturally, we can envision entirely different constraints as well.
+Consider a language with overloading and overloading constraints
+HM$_{\mathcal{O}}$ as described in [[CITE]].
+In HM${\mathcal{O}}$, constraints are structured in the form $ident : α → τ$,
+wherein an overloaded identifier `ident' with type $α → τ$ is
+expected to be present. For instance, consider the overloaded `eq' function
+designed for list equality: $eq : ∀α.(eq : α → α → bool)$ $⇒ [α] → [α] → bool$.
 This formulation allows us to convey that list equality is feasible only when
 the elements of the list can be compared.
 
