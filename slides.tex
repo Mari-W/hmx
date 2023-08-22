@@ -21,6 +21,9 @@
 
 \input{definitions}
 
+\newcommand{\KWLet}{\textbf{let }}
+\newcommand{\KWIn}{\textbf{ in }}
+
 \begin{document}
 
 \begin{frame}
@@ -92,7 +95,7 @@ let cons = .. : |$\textcolor{blue}{\symbf{∀α. α →}}$| |\textcolor{blue}{\t
       \end{center}
       \begin{center}
         \begin{align*}
-          σ \ ∷= & \ \ τ     \\
+          σ \ ∷= & \ \ τ            \\
                  & | \ ∀ \Vec α . τ
         \end{align*}
       \end{center}
@@ -108,7 +111,12 @@ let cons = .. : |$\textcolor{blue}{\symbf{∀α. α →}}$| |\textcolor{blue}{\t
   \begin{columns}
     \begin{column}{0.45\textwidth}
       \begin{center}
-        \HMLet
+        \infer[\text{Let}]{
+          Γ ⊢ \KWLet x = e\KWIn e′ : τ′
+        }{
+          Γ ⊢ e : σ
+          & Γ, x : σ ⊢ e′ : τ′
+        }
       \end{center}
       % \begin{center}
       %   \begin{block}{Example: Instance Relation}
@@ -118,7 +126,12 @@ let cons = .. : |$\textcolor{blue}{\symbf{∀α. α →}}$| |\textcolor{blue}{\t
     \end{column}
     \begin{column}{0.45\textwidth}
       \begin{center}
-        \HMIntro
+        \infer[∀ \ \text{Intro}]{
+          Γ ⊢ e : ∀ \Vec α. τ
+        }{
+          Γ ⊢ e : τ
+          & \Vec α ∉ free(Γ)
+        }
       \end{center}
       \begin{center}
         \HMElim
@@ -261,18 +274,38 @@ gte {key = 17, foo = "bar"}   : Bool
   \begin{columns}
     \begin{column}{0.45\textwidth}
       \begin{center}
-        \HMXLet
+        \infer[\text{Let}]{
+          \textcolor{blue}{C,}\ Γ ⊢ \KWLet x = e\KWIn e′ : τ′
+        }{
+          \textcolor{blue}{C,}\ Γ ⊢ e : σ
+          & \textcolor{blue}{C,}\ (Γ, x : σ) ⊢ e′ : τ′
+        }
       \end{center}
       \begin{center}
-        \HMXEq
+        \infer[\text{\textcolor{blue}{Eq}}]{
+          C,\ Γ ⊢ e : τ′
+        }{
+          C,\ Γ ⊢ e : τ
+          & ⊢ (τ = τ′)
+        }
       \end{center}
     \end{column}
     \begin{column}{0.45\textwidth}
       \begin{center}
-        \HMXIntro
+        \infer[∀ \ \text{Intro}]{
+          \textcolor{blue}{C ∧ ∃\Vec α.D,}\ Γ ⊢ e : ∀ \Vec α.D ⇒ τ
+        }{
+          \textcolor{blue}{C ∧ D,}\ Γ ⊢ e : τ
+          & \Vec α ∉ free(Γ) \ \textcolor{blue}{∪ \ free(C)}
+        }
       \end{center}
       \begin{center}
-        \HMXElim
+        \infer[∀ \ \text{Elim}]{
+        \textcolor{blue}{C,} \ Γ ⊢ e : [\Vec τ / \Vec α] τ
+        }{
+        \textcolor{blue}{C,}\ Γ ⊢ e : ∀ \Vec α.D ⇒ τ
+        & \textcolor{blue}{C ⊢ᵉ [\Vec τ / \Vec α]D}
+        }
       \end{center}
     \end{column}
   \end{columns}
@@ -337,15 +370,15 @@ gte {key = 17, foo = "bar"}   : Bool
       \begin{block}{Ordering}
         \setlength\abovedisplayskip{0pt}
         \begin{align*}
-          ⊢ & \{lᵢ : τᵢ\} = \{l_{π(i)} : τ_{π(i)}\}   \\
+          ⊢ & \{lᵢ : τᵢ\} = \{l_{π(i)} : τ_{π(i)}\}     \\
             & \text{ where } π \text{ is a permutation}
         \end{align*}
       \end{block}
       \begin{block}{Solved Form}
         \setlength\abovedisplayskip{0pt}
         \begin{align*}
-          α &≤ \{l : τ\} ∈ 𝓢 \\ 
-          & \text{ where all } α ≤ \{l : τ\} \text{ non-recursive}
+          α & ≤ \{l : τ\} ∈ 𝓢                                        \\
+            & \text{ where all } α ≤ \{l : τ\} \text{ non-recursive}
         \end{align*}
       \end{block}
     \end{column}

@@ -8,6 +8,7 @@
 \usepackage{proof}
 \usepackage{bigfoot}
 \usepackage{minted}
+\usepackage{subcaption}
 \AtBeginEnvironment{minted}{%
   \renewcommand{\fcolorbox}[4][]{#4}}
 \usepackage[backend=biber]{biblatex}
@@ -87,7 +88,7 @@ Unfortunately it is undecidable for arbitrary programs to determine when to
 introduce and eliminate $∀$ types and in consequence type inference in System F
 is undecidable [[CITE]].
 % Wells, J.B. (1994). "Typability and type checking in the second-order lambda-calculus are equivalent and undecidable". Proceedings of the 9th Annual IEEE Symposium on Logic in Computer Science (LICS). pp. 176–185. doi:10.1109/LICS.1994.316068. ISBN 0-8186-6310-3. S2CID 15078292.
-In consequence, System F is equipped with explicit type abstraction ($Λα. \ e$)
+Thus, System F is equipped with explicit type abstraction ($Λα. \ e$)
 and type
 application ($e \ T$) on the syntax level.
 
@@ -125,12 +126,12 @@ concat = $λ$[].      $λ$ys. ys
          $λ$[x:xs]. $λ$ys. x : (concat xs ys)   
   \end{lstlisting}
 \end{example}
-Examples assume the extension of HM with various language features such as
+Examples assume the extension with various language features such as
 lists and pattern matching.
-Further, Haskell like notation is used instead of let bindings.
-For convenience some inferred types are given.
+For convenience, type annotations are given for inferred function types.
 
-In this example, HM would be capable of deducing the type $∀α.[α] → [α] → [α]$
+In this example, HM would be capable of deducing the type $∀α.\ [α] → [α] →
+  [α]$
 for the function `concat'.
 This type is in fact the most general type for `concat'.
 
@@ -141,8 +142,8 @@ to types that satisfy specific constraints.
 We refer to such types as \emph{constraint types}.
 Constraints can exhibit various different forms depending on the type features
 present in the actual language.
-As an illustration, consider HM$_{\mathcal{R}}$, that is HM extended with
-polymorphic records as outlined in [[CITE]].
+As an illustration, consider HM$_𝓡$, that is HM extended with
+polymorphic records [[CITE]].
 In this scenario, it becomes valuable to have the capability to specify that a
 type variable $α$
 should solely be instantiated as a record type containing specific fields.
@@ -159,7 +160,7 @@ We simulate the extraction of  the field `key'.
 Instead of the notation $e.key$, the alternative syntax $key \ e$ could then be
 employed.\footnote{
   In fact, desugaring label syntax as seen in the example
-  is part of a translation from HM$_{\mathcal{R}}$ to HM$_{\mathcal{O}}$.
+  is part of a translation from HM$_𝓡$ to HM$_𝓞$.
 }
 We introduce two type variables, namely $α$ and $β$. While $β$ exhibits
 parametric polymorphism, $α$ functions as a constraint type.
@@ -173,16 +174,29 @@ constraint using conjunction.
 
 Naturally, we can envision entirely different constraints as well.
 Consider a language with overloading and overloading constraints
-HM$_{\mathcal{O}}$ as described in [[CITE]].
-In HM${\mathcal{O}}$, constraints are structured in the form $ident : α → τ$,
-wherein an overloaded identifier `ident' with type $α → τ$ is
-expected to be present. For instance, consider the overloaded `eq' function
-designed for list equality: $eq : ∀α.(eq : α → α → bool)$ $⇒ [α] → [α] → bool$.
-This formulation allows us to convey that list equality is feasible only when
-the elements of the list can be compared.
+HM$_𝓞$ [[CITE]].
+In HM$_𝓞$, constraints are structured in the form $x : α → τ$,
+wherein an instance for the overloaded identifier $x$ with type $α → τ$ is
+expected to be present.
+\begin{example}[Overloading the Equality Operator for Lists]
+  \begin{lstlisting}
+eq : nat $→$ nat $→$ bool
+eq = $λ$0       $λ$0       = $⊤$
+     $λ$suc n. $λ$suc m. = eq n m 
+     $λ$_.      $λ$_.      = $⊥$
+eq : $∀α.($eq $:$ $α → α →$ bool$)$ $⇒ [α] → [α] →$ bool
+eq = $λ$[].      $λ$[].      = $⊤$
+     $λ$[x:xs]. $λ$[y:ys]. = eq x y $∧$ eq xs ys
+     $λ$_.       $λ$_.       = $⊥$
+  \end{lstlisting}
+\end{example}
+This example considers the overloaded `eq' function.
+Initially, `eq' is instantiated for the base type `nat'.
+Subsequently, the instantiation for lists requires us to convey that list
+equality is feasible only when
+the elements of the list can be compared, that is, there exists a instance $α →
+  α →$ bool.
 
-A in-depth investigation into both polymorphic records and overloading will be
-undertaken subsequently {{REF 4}}.
 Instead of focusing exclusively on these individual systems, our exploration
 will center on \hmx{}, a HM-based system that remains detached from
 the actual constraint domain $X$.
@@ -190,19 +204,86 @@ Subsequently, we will proceed to instantiate $X$ using the two showcased
 instances of constraints, namely overloading and polymorphic records.
 \section{\hmx{}}
 \subsection{Introduction}
+In this segment, our discussion of \hmx{} will adopt a slightly informal
+approach.
+We will skip over some specifics and formalities to ensure clarity and
+concentrate on
+grasping the underlying concepts of the system, rather than deriving a full
+formal definition.
 \subsection{Syntax}
 \begin{figure}[t]
   \centering
+  \begin{subfigure}[t]{0.3\textwidth}
+    \begin{align*}
+      e \ := & \ \ x                    \\
+             & | \ λx. e                \\
+             & | \ e \ e                \\
+             & | \ \kwlet x = e \kwin e
+    \end{align*}
+  \end{subfigure}
+  \begin{subfigure}[t]{0.3\textwidth}
+    \begin{align*}
+      C \ := & \ \ ⊥     \\
+             & | \ ⊤     \\
+             & | \ C ∧ C \\
+             & | \ ∃α. C \\
+             & | \ τ = τ \\
+    \end{align*}
+  \end{subfigure}
+  \begin{subfigure}[t]{0.3\textwidth}
+    \begin{align*}
+      τ \ := & \ \ α     \\
+             & | \ τ → τ
+    \end{align*}
+    \begin{align*}
+      σ \ := & \ \ τ             \\
+             & | \ ∀\Vec α.C ⇒ τ
+    \end{align*}
+    \begin{align*}
+      Γ \ := & \ \ ∅           \\
+             & | \ Γ , \ x : σ
+    \end{align*}
+  \end{subfigure}
   \caption{Syntax}
 \end{figure}
 \subsection{Typing}
 \begin{figure}[t]
   \centering
+  \begin{subfigure}[t]{0.52\textwidth}
+    \infer[(\text{Eq})]{
+      C,\ Γ ⊢ e : τ′
+    }{
+      C,\ Γ ⊢ e : τ
+      & ⊢ (τ = τ′)
+    }
+    \infer{}{}
+    \infer[(∀\text{I})]{
+      {C ∧ ∃\Vec α.D,}\ Γ ⊢ e : ∀ \Vec α.D ⇒ τ
+    }{
+      {C ∧ D,}\ Γ ⊢ e : τ
+      & \Vec α ∉ free(C, Γ)
+    }
+  \end{subfigure}
+  \begin{subfigure}[t]{0.42\textwidth}
+    \infer[(\text{Let})]{
+      {C,}\ Γ ⊢ \kwlet x = e\kwin e′ : τ′
+    }{
+      {C,}\ Γ ⊢ e : σ
+      & {C,}\ (Γ, \ x : σ) ⊢ e′ : τ′
+    }
+    \infer{}{}
+    \infer[(∀\text{E})]{
+    {C,} \ Γ ⊢ e : [\Vec τ / \Vec α] τ
+    }{
+    {C,}\ Γ ⊢ e : ∀ \Vec α.C′ ⇒ τ
+    & {C ⊢ᵉ [\Vec τ / \Vec α]C′}
+    }
+  \end{subfigure}
   \caption{Typing $(C, Γ ⊢ e : σ)$}
 \end{figure}
 \subsection{Type Inference}
 \section{Instantiating \hmx{}}
-\subsection{\hmr{}: Extension with Polymorphic Records}
+\subsection{\hmr{}: Instantiation with Polymorphic Records}
 \subsubsection{Extensions}
 \begin{figure}[t]
   \centering
@@ -213,7 +294,7 @@ instances of constraints, namely overloading and polymorphic records.
   \caption{Constraints}
 \end{figure}
 \subsubsection{Example}
-\subsection{\hmo{}: Extension with Overloading}
+\subsection{\hmo{}: Instantiation with Overloading}
 \subsubsection{Extensions}
 \begin{figure}[t]
   \centering
