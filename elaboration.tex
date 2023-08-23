@@ -72,6 +72,7 @@
 \newpage
 
 \section{Introduction}
+
 \subsection{Polymorphism and Full Type Inference in HM}
 The HM type system represents a well known and understood typing discipline
 that
@@ -159,8 +160,9 @@ represented as $e.l$ where $l$ denotes a label.
 We simulate the extraction of  the field `key'.
 Instead of the notation $e.key$, the alternative syntax $key \ e$ could then be
 employed.\footnote{
-  In fact, desugaring label syntax as seen in the example
-  is part of a translation from HM$_𝓡$ to HM$_𝓞$.
+  Simplifying label syntax in this way is a component of a possible translation
+  process from HM$_𝓡$ to HM$_𝓞$.
+
 }
 We introduce two type variables, namely $α$ and $β$. While $β$ exhibits
 parametric polymorphism, $α$ functions as a constraint type.
@@ -202,7 +204,9 @@ will center on \hmx{}, a HM-based system that remains detached from
 the actual constraint domain $X$.
 Subsequently, we will proceed to instantiate $X$ using the two showcased
 instances of constraints, namely overloading and polymorphic records.
+
 \section{\hmx{}}
+
 \subsection{Introduction}
 In this segment, our discussion of \hmx{} will adopt a slightly informal
 approach.
@@ -210,6 +214,7 @@ We will skip over some specifics and formalities to ensure clarity and
 concentrate on
 grasping the underlying concepts of the system, rather than deriving a full
 formal definition.
+
 \subsection{Syntax}
 \begin{figure}[t]
   \centering
@@ -223,11 +228,10 @@ formal definition.
   \end{subfigure}
   \begin{subfigure}[t]{0.3\textwidth}
     \begin{align*}
-      C \ := & \ \ ⊥     \\
-             & | \ ⊤     \\
-             & | \ C ∧ C \\
-             & | \ ∃α. C \\
-             & | \ τ = τ \\
+      C \ := & \ \ ⊤       \\
+             & | \ C ∧ C   \\
+             & | \ τ = τ   \\
+             & | \ ∃α. \ C \\
     \end{align*}
   \end{subfigure}
   \begin{subfigure}[t]{0.3\textwidth}
@@ -246,6 +250,40 @@ formal definition.
   \end{subfigure}
   \caption{Syntax}
 \end{figure}
+
+The syntax of \hmx{} is closely related to that of HM.
+
+Expressions $e$ include the constructs found in the simply typed lambda
+calculus.
+These encompass variables $x$, abstractions $λx. \ e$, and applications $e \
+  e$.
+Additionally, let bindings are present to confine the language to let
+polymorphism.
+
+Regarding types, we maintain the distinction between mono types $τ$ and
+poly types $σ$. However, unlike in the context of HM, we are now
+able to introduce constraints $C$ to poly types.
+
+The constraint syntax described here constitutes the \emph{minimal} essential
+components necessary for the syntax of constraint domain $X$.
+The underlying notion is that the constraint syntax is later extended when
+instantiating \hmx{}, and
+conceivably also the syntax for expressions and types, to incorporate those new
+constraints.
+
+A constraint $C$ is either $⊤$ (true), a conjunction of two constraints
+$C ∧ C$, an equality between types $τ = τ$, or a projection $∃α. \ C$.
+The projection operator introduces a new type variable $α$ to constraint $C$.
+Through projection, it becomes possible to express the
+existence of a type without the necessity of actually introducing a new
+type variable at the type level.
+This mechanism proves advantageous within the non-algorithmic typing rules and
+type inference algorithms.
+Moreover, it actually extends the expressive capacity beyond that of solely
+introducing
+all type variables present in constraints using the $∀$ operator\footnote{Refer
+  to example XX}.
+
 \subsection{Typing}
 \begin{figure}[t]
   \centering
@@ -279,8 +317,21 @@ formal definition.
     & {C ⊢ᵉ [\Vec τ / \Vec α]C′}
     }
   \end{subfigure}
-  \caption{Typing $(C, Γ ⊢ e : σ)$}
+  \caption{Logical Type System $(C, Γ ⊢ e : σ)$}
 \end{figure}
+
+Our current emphasis will be on the logical type system. Unlike the inference
+algorithm, which is also provided for \hmx{}, the logical type system does not
+represent a determinable process for typing a provided expression. This is due
+to the $(∀$E$)$ and $(∀$I$)$ rules lacking syntax direction and being
+applicable at various points in the process.
+
+The typing rules $($Var$)$, $($Abs$)$ and $($App$)$ are omitted here.
+These rules are the familiar standards found in the simply typed lambda
+calculus.
+Both $($Abs$)$ and $($App$)$ operate on mono types, while ($Var$) allows us to
+retrieve a variable with a
+poly type from the context.
 \subsection{Type Inference}
 \section{Instantiating \hmx{}}
 \subsection{\hmr{}: Instantiation with Polymorphic Records}
