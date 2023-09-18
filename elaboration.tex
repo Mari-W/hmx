@@ -272,7 +272,7 @@ conceivably also the syntax for expressions and types, to incorporate those new
 constraints.
 
 A constraint $C$ is either $⊤$ (true), a conjunction of two constraints
-$C ∧ C$, an equality between types $τ = τ$, or a projection $∃α. \ C$.
+$C ∧ C$, an equality between mono types $τ = τ$, or a projection $∃α. \ C$.
 The projection operator introduces a new type variable $α$ to constraint $C$.
 Through projection, it becomes possible to express the
 existence of a type without the necessity of actually introducing a new
@@ -282,39 +282,53 @@ type inference algorithms.
 Moreover, it actually extends the expressive capacity beyond that of solely
 introducing
 all type variables present in constraints using the $∀$ operator\footnote{Refer
-  to example XX}.
+  to example 5}.
 
 \subsection{Typing}
 \begin{figure}[t]
   \centering
   \begin{subfigure}[t]{0.52\textwidth}
-    \infer[(\text{Eq})]{
-      C,\ Γ ⊢ e : τ′
+    \centering
+    \infer[(\text{Var})]{
+      C,\ Γ ⊢ x : σ
     }{
-      C,\ Γ ⊢ e : τ
-      & ⊢ (τ = τ′)
+      C,\ x : σ ∈ Γ
+    }
+    \infer{}{}
+    \infer[(\text{App})]{
+      C,\ Γ ⊢ e₁ \ e₂ : τ′
+    }{
+      C,\ Γ ⊢ e₁ : τ → τ′
+      & C, \ Γ ⊢ e₂ :  τ′
     }
     \infer{}{}
     \infer[(∀\text{I})]{
-      {C ∧ ∃\Vec α.D,}\ Γ ⊢ e : ∀ \Vec α.D ⇒ τ
+      C ∧ ∃\Vec α.D,\ Γ ⊢ e : ∀ \Vec α.D ⇒ τ
     }{
       {C ∧ D,}\ Γ ⊢ e : τ
       & \Vec α ∉ free(C, Γ)
     }
   \end{subfigure}
   \begin{subfigure}[t]{0.42\textwidth}
-    \infer[(\text{Let})]{
-      {C,}\ Γ ⊢ \kwlet x = e\kwin e′ : τ′
+    \centering
+    \infer[(\text{Abs})]{
+      C,\ Γ ⊢ λx. e : τ
     }{
-      {C,}\ Γ ⊢ e : σ
-      & {C,}\ (Γ, \ x : σ) ⊢ e′ : τ′
+      C,\ (Γ, \ x :  τ′) ⊢ e : τ
+    }
+    \infer{}{}
+    \infer[(\text{Let})]{
+      C,\ Γ ⊢ \kwlet x = e\kwin e′ : τ′
+    }{
+      C,\ Γ ⊢ e : σ
+      & C,\ (Γ, \ x : σ) ⊢ e′ : τ′
     }
     \infer{}{}
     \infer[(∀\text{E})]{
-    {C,} \ Γ ⊢ e : [\Vec τ / \Vec α] τ
+      C, \ Γ ⊢ e : [\Vec τ / \Vec α] τ
     }{
-    {C,}\ Γ ⊢ e : ∀ \Vec α.C′ ⇒ τ
-    & {C ⊢ᵉ [\Vec τ / \Vec α]C′}
+      C,\ Γ ⊢ e : ∀ \Vec α.C′ ⇒ τ
+      & {C ⊢ᵉ [\Vec τ / \Vec α]C′}
     }
   \end{subfigure}
   \caption{Logical Type System $(C, Γ ⊢ e : σ)$}
@@ -326,12 +340,16 @@ represent a determinable process for typing a provided expression. This is due
 to the $(∀$E$)$ and $(∀$I$)$ rules lacking syntax direction and being
 applicable at various points in the process.
 
-The typing rules $($Var$)$, $($Abs$)$ and $($App$)$ are omitted here.
-These rules are the familiar standards found in the simply typed lambda
-calculus.
-Both $($Abs$)$ and $($App$)$ operate on mono types, while ($Var$) allows us to
-retrieve a variable with a
-poly type from the context.
+Both $($Abs$)$ and $($App$)$ are the familiar standards
+found in the simply typed lambda
+calculus and operate on mono types, thus enforcing let
+polymorphism.
+On the other hand, the $($Var$)$ rule allows us to
+retrieve a variable with a poly type, potentially introduced through a let
+binding.
+The $($Let$)$ rule likewise incorporates let polymorphism by permitting the
+expression bound by $x$ to exhibit polymorphism, even though the outcome itself
+remains monomorphic.
 \subsection{Type Inference}
 \section{Instantiating \hmx{}}
 \subsection{\hmr{}: Instantiation with Polymorphic Records}
