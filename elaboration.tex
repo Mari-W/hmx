@@ -183,7 +183,7 @@ expected to be present.
 \begin{example}[Overloading the Equality Operator for Lists]
   \begin{lstlisting}
 eq : nat $→$ nat $→$ bool
-eq = $λ$0       $λ$0       = $⊤$
+eq = $λ$0.      $λ$0.      = $⊤$
      $λ$suc n. $λ$suc m. = eq n m 
      $λ$_.      $λ$_.      = $⊥$
 eq : $∀α.($eq $:$ $α → α →$ bool$)$ $⇒ [α] → [α] →$ bool
@@ -254,8 +254,8 @@ formal definition.
 The syntax of \hmx{} is closely related to that of HM.
 
 Expressions $e$ include the constructs found in the simply typed lambda
-calculus.
-These encompass variables $x$, abstractions $λx. \ e$, and applications $e \
+calculus, more specifically variables $x$, abstractions $λx. \ e$, and
+applications $e \
   e$.
 Additionally, let bindings are present to confine the language to let
 polymorphism.
@@ -325,16 +325,24 @@ all type variables present in constraints using the $∀$ operator\footnote{Refe
     }
     \infer{}{}
     \infer[(∀\text{E})]{
-      C, \ Γ ⊢ e : [\Vec τ / \Vec α] τ
+    C, \ Γ ⊢ e : [\Vec τ / \Vec α] τ
     }{
-      C,\ Γ ⊢ e : ∀ \Vec α.C′ ⇒ τ
-      & {C ⊢ᵉ [\Vec τ / \Vec α]C′}
+    C,\ Γ ⊢ e : ∀ \Vec α.C′ ⇒ τ
+    & {C ⊢ [\Vec τ / \Vec α]C′}
     }
   \end{subfigure}
   \caption{Logical Type System $(C, Γ ⊢ e : σ)$}
 \end{figure}
 
-Our current emphasis will be on the logical type system. Unlike the inference
+Our current emphasis will be on the logical type system.
+The typing relation ($C, Γ ⊢ e : σ$) in \hmx{} extends the standard typing
+relation ($Γ ⊢ e : T$) by integrating the propagation of a constraint $C$
+across the typing rules. The constraint $C$ must be in a solved form.
+Informally, this means that $C$ should be a satisfiable constraint, and it
+should not contain equality predicates. Equality constraints should be handled
+through some form of unification.
+
+Unlike the inference
 algorithm, which is also provided for \hmx{}, the logical type system does not
 represent a determinable process for typing a provided expression. This is due
 to the $(∀$E$)$ and $(∀$I$)$ rules lacking syntax direction and being
@@ -348,8 +356,21 @@ On the other hand, the $($Var$)$ rule allows us to
 retrieve a variable with a poly type, potentially introduced through a let
 binding.
 The $($Let$)$ rule likewise incorporates let polymorphism by permitting the
-expression bound by $x$ to exhibit polymorphism, even though the outcome itself
+expression bound by $x$ to exhibit a poly type, even though the resulting
+overall type
 remains monomorphic.
+The $(∀$I$)$ and $(∀$E$)$ rules are particularly interesting as they enable the
+introduction and elimination of type variable bindings and constraints.
+Through the use of the $(∀$I$)$ rule, we can assign an arbitrary expression $e$
+with a mono type $τ$ a poly type $∀ \Vec α.D ⇒ τ$, introducing new type
+variables $\Vec α$ and the constraint $D$.
+Hence, we validate the correctness of expression $e$ under the assumption of
+constraint $D$ in addition to the existing constraint $C$.
+Additionally, we introduce the constraint $∃α. D$ in the conclusion of the
+rule. This inclusion signifies that $D$ should be, at the very least,
+satisfiable, thereby enabling the detection of a type error arising from an
+unsatisfiable constraint at an early stage.
+
 \subsection{Type Inference}
 \section{Instantiating \hmx{}}
 \subsection{\hmr{}: Instantiation with Polymorphic Records}
