@@ -46,8 +46,8 @@
 \def\addcontentsline#1#2#3{\oldaddcontentsline{#1}{#2}{#3}}
 
 \begin{abstract}
-  We investigate \hmx{} [[CITE]], a family of type systems designed to
-  accommodate
+  We explore \hmx{} [[CITE]], a family of type systems designed to
+  combine
   polymorphism, full type inference and constraint types.
   \hmx{} extends the Hindley-Milner type system (HM) [[CITE]], which already
   limits
@@ -55,11 +55,12 @@
   The constraint system $X$ utilized in \hmx{} remains abstract, allowing
   instantiating $X$ with arbitrary constraint systems that meet specific
   criteria.
-  This abstraction empowers \hmx{} to serve as a model for analyzing various
+  This abstraction allows \hmx{} to serve as a model for analyzing various
   constraint-related type features commonly encountered in practice.
   Notable examples include subtyping, substructural
   types and type classes.
-  \hmx{} encompasses a sound and complete type inference algorithm that remains
+  \hmx{} is presented along a sound and complete type inference algorithm that
+  remains
   independent of the actual constraint system
   $X$.
   As a result, the work for proving theoretical properties and designing
@@ -79,14 +80,14 @@ that
 refines System F [[CITE]] by establishing constraints that allow type inference
 to be decidable.
 HM serves as the foundation for numerous real-world functional programming
-languages, including languages like Haskell and Rust.
+languages, including Haskell and Rust.
 
 In System F, we can introduce variables for both expressions and types.
 The type $∀α. \ T$, where $α$ binds a new type in $T$,
 indicates that an expression of this type is polymorphic over some
 arbitrary type $α$.
 Unfortunately it is undecidable for arbitrary programs to determine when to
-introduce and eliminate $∀$ types and in consequence type inference in System F
+introduce and eliminate $∀$-types and in consequence type inference in System F
 is undecidable [[CITE]].
 % Wells, J.B. (1994). "Typability and type checking in the second-order lambda-calculus are equivalent and undecidable". Proceedings of the 9th Annual IEEE Symposium on Logic in Computer Science (LICS). pp. 176–185. doi:10.1109/LICS.1994.316068. ISBN 0-8186-6310-3. S2CID 15078292.
 Thus, System F is equipped with explicit type abstraction ($Λα. \ e$)
@@ -99,24 +100,24 @@ most general type (the \emph{principal type}) of a any given program is
 inferred.
 Consequently, there's no need for extra syntax to introduce or eliminate type
 variables.
-Instead, HM employs let bindings $\kwlet x = e₂ \kwin e₁$ where $e₂$ is the
-only expression that is allowed to have a polymorphic type.
-Other constructs, such as applications or variables bound by a lambda
+Instead, HM adds let bindings $\kwlet x = e₂ \kwin e₁$ to the language, where
+$e₂$ is the only expression that is allowed to have a polymorphic type.
+Other constructs, such as application or variables bound by a lambda
 abstractions, cannot inherit polymorphic types.
 This constraint is commonly referred to as `let polymorphism'.
 
-In the future, we will label polymorphic types as $σ$, where a $∀$-type exists
-within $σ$, and we will refer to them as `poly types'.
+In the future, we will label polymorphic types as $σ$,
+where a $∀$-type exists within $σ$, and we will refer to them as `poly types'.
 On the contrary, all other types, including base
-types, functions, and type variables, will be designated as `mono types' and
+types, functions and type variables, will be referred to as `mono types' and
 denoted as $τ$.
 
-Poly types are further constrained to exclusively permit $∀$ binders at the top
+Poly types are further constrained to exclusively permit $∀$-binders at the top
 level.
-Therefore, a type like $∀α. α → ∀α. α$ would not be a valid poly type.
-Consequently, we establish that poly types consistently adhere to the structure
+Therefore, a type like $(∀α. α) → (∀α. α)$ would not be a valid poly type.
+Consequently, we establish that poly types always adhere to the structure
 $∀\bar{α}. \ τ$, where $\bar{α} = α₁,..,αₙ$.
-By upholding these two regulations, that is let polymorphism and the exclusion
+By upholding these two restrictions, that is let polymorphism and the exclusion
 of
 higher-order polymorphism, type inference remains decidable and
 yields a principal type.
@@ -139,7 +140,7 @@ This type is in fact the most general type for `concat'.
 \subsection{Introducing Constraints on Types}
 Although parametric polymorphism is already a powerful abstraction, there are
 instances where we desire to constrain type variables solely to instantiations
-to types that satisfy specific constraints.
+to types that satisfy certain constraints.
 We refer to such types as \emph{constraint types}.
 Constraints can exhibit various different forms depending on the type features
 present in the actual language.
@@ -147,7 +148,7 @@ As an illustration, consider HM$_𝓡$, that is HM extended with
 polymorphic records [[CITE]].
 In this scenario, it becomes valuable to have the capability to specify that a
 type variable $α$
-should solely be instantiated as a record type containing specific fields.
+should solely be instantiated as a record type containing a specific fields.
 \begin{example}[Alternative to Selector Syntax on Records for Field `key']
   \begin{lstlisting}
 key : $∀α, β.(α ≤ \{$key : $β\})$ $⇒ α → β$
@@ -156,28 +157,29 @@ key = $λ${key : β, ..}. key
 \end{example}
 This example simulates the extraction of a particular field from a record,
 conventionally
-represented as $e.l$ where $l$ denotes a label.
+represented as $e.l$ where $l$ denotes a field label.
 We simulate the extraction of  the field `key'.
 Instead of the notation $e.key$, the alternative syntax $key \ e$ could then be
 employed.\footnote{
-  Simplifying label syntax in this way is a component of a possible translation
+  Simulating label syntax in this way is a component of a possible translation
   process from HM$_𝓡$ to HM$_𝓞$.
 
 }
 We introduce two type variables, namely $α$ and $β$. While $β$ exhibits
 parametric polymorphism, $α$ functions as a constraint type.
-The constraint imposed on $α$, denoted as $α ≤ \{$key : $β\}$, signifies that
+The constraint imposed on $α$, denoted as $α ≤ \{$key : $β\}$, expresses that
 $α$ is exclusively permitted to take on a type that corresponds to a record
 featuring a `key' field of type $β$.
-For introducing constraint $C$ on type variables $α$, we will adopt the
+For introducing constraint a $C$ on type variables $\bar{α}$, we will adopt the
 notation $∀\bar{α}.C$ $⇒ τ$.
 Multiple constraints will be combined to a single
-constraint using conjunction.
+constraint using conjunction. If the constraint $C$ is the trivial constraint
+$⊤$ we may also write $∀\bar{α}.$ $τ$.
 
 Naturally, we can envision entirely different constraints as well.
 Consider a language with overloading and overloading constraints
 HM$_𝓞$ [[CITE]].
-In HM$_𝓞$, constraints are structured in the form $x : α → τ$,
+In HM$_𝓞$, constraints have the form $x : α → τ$,
 wherein an instance for the overloaded identifier $x$ with type $α → τ$ is
 expected to be present.
 \begin{example}[Overloading the Equality Operator for Lists]
@@ -194,7 +196,7 @@ eq = $λ$[].      $λ$[].      = $⊤$
 \end{example}
 This example considers the overloaded `eq' function.
 Initially, `eq' is instantiated for the base type `nat'.
-Subsequently, the instantiation for lists requires us to convey that list
+Subsequently, the instantiation for lists requires us to express that list
 equality is feasible only when
 the elements of the list can be compared, that is, there exists a instance $α →
   α →$ bool.
@@ -257,18 +259,19 @@ Expressions $e$ include the constructs found in the simply typed lambda
 calculus, more specifically variables $x$, abstractions $λx. \ e$, and
 applications $e \
   e$.
-Additionally, let bindings are present to confine the language to let
+Additionally, let bindings are present to constrain the language to let
 polymorphism.
 
-Regarding types, we maintain the distinction between mono types $τ$ and
-poly types $σ$. However, unlike in the context of HM, we are now
-able to introduce constraints $C$ to poly types.
+We maintain the distinction between mono types $τ$ and
+poly types $σ$. However, we are now
+able to introduce constraints $C$ in $∀$-types.
 
-The constraint syntax described here constitutes the \emph{minimal} essential
+The constraint syntax described here forms the \emph{minimal} essential
 components necessary for the syntax of constraint domain $X$.
 The underlying notion is that the constraint syntax is later extended when
 instantiating \hmx{}, and
-conceivably also the syntax for expressions and types, to incorporate those new
+consequently also the syntax for expressions and types, to incorporate those
+new
 constraints.
 
 A constraint $C$ is either $⊤$ (true), a conjunction of two constraints
@@ -277,11 +280,12 @@ The projection operator introduces a new type variable $α$ to constraint $C$.
 Through projection, it becomes possible to express the
 existence of a type without the necessity of actually introducing a new
 type variable at the type level.
-This mechanism proves advantageous within the non-algorithmic typing rules and
+This mechanism proves advantageous within both the non-algorithmic typing rules
+and
 type inference algorithms.
 Moreover, it actually extends the expressive capacity beyond that of solely
 introducing
-all type variables present in constraints using the $∀$ operator\footnote{Refer
+all type variables present in constraints using the $∀$-operator\footnote{Refer
   to example 5}.
 
 \subsection{Typing}
@@ -327,8 +331,8 @@ all type variables present in constraints using the $∀$ operator\footnote{Refe
     \infer[(∀\text{E})]{
     C, \ Γ ⊢ e : [\Vec τ / \Vec α] τ
     }{
-    C,\ Γ ⊢ e : ∀ \Vec α.C′ ⇒ τ
-    & {C ⊢ [\Vec τ / \Vec α]C′}
+    C,\ Γ ⊢ e : ∀ \Vec α.D ⇒ τ
+    & {C ⊢ [\Vec τ / \Vec α]D}
     }
   \end{subfigure}
   \caption{Logical Type System $(C, Γ ⊢ e : σ)$}
@@ -338,15 +342,15 @@ Our current emphasis will be on the logical type system.
 The typing relation ($C, Γ ⊢ e : σ$) in \hmx{} extends the standard typing
 relation ($Γ ⊢ e : T$) by integrating the propagation of a constraint $C$
 across the typing rules. The constraint $C$ must be in a solved form.
-Informally, this means that $C$ should be a satisfiable constraint, and it
-should not contain equality predicates. Equality constraints should be handled
+Informally, this means that $C$ should be a satisfiable constraint and it
+should not contain equality predicates. Equality constraints should be resolved
 through some form of unification.
 
 Unlike the inference
 algorithm, which is also provided for \hmx{}, the logical type system does not
 represent a determinable process for typing a provided expression. This is due
 to the $(∀$E$)$ and $(∀$I$)$ rules lacking syntax direction and being
-applicable at various points in the process.
+applicable at various points in the typing derivation.
 
 Both $($Abs$)$ and $($App$)$ are the familiar standards
 found in the simply typed lambda
@@ -355,8 +359,8 @@ polymorphism.
 On the other hand, the $($Var$)$ rule allows us to
 retrieve a variable with a poly type, potentially introduced through a let
 binding.
-The $($Let$)$ rule likewise incorporates let polymorphism by permitting the
-expression bound by $x$ to exhibit a poly type, even though the resulting
+The $($Let$)$ rule likewise enforces let polymorphism by permitting the
+expression bound by $x$ to have a poly type, even though the resulting
 overall type
 remains monomorphic.
 The $(∀$I$)$ and $(∀$E$)$ rules are particularly interesting as they enable the
@@ -364,12 +368,17 @@ introduction and elimination of type variable bindings and constraints.
 Through the use of the $(∀$I$)$ rule, we can assign an arbitrary expression $e$
 with a mono type $τ$ a poly type $∀ \Vec α.D ⇒ τ$, introducing new type
 variables $\Vec α$ and the constraint $D$.
-Hence, we validate the correctness of expression $e$ under the assumption of
+Hence, we check that expression $e$ has type $τ$ under the assumption of
 constraint $D$ in addition to the existing constraint $C$.
-Additionally, we introduce the constraint $∃α. D$ in the conclusion of the
-rule. This inclusion signifies that $D$ should be, at the very least,
-satisfiable, thereby enabling the detection of a type error arising from an
-unsatisfiable constraint at an early stage.
+Additionally, we add the constraint $∃\bar{α}. D$ in the conclusion of the
+rule using conjunction.
+This addition is not strictly necessary but expresses that $D$ should be, at
+the very least, satisfiable, thereby enabling the detection of a type error
+arising from an unsatisfiable constraint at an earlier stage.
+The $(∀$E$)$ rule allows us to eliminate a $∀$-type by substituting all type variables $\bar{α}$ with mono types $\bar{τ}$ in $τ$. This substitution of all bound variables with mono types results in a mono type again. More importantly we need to verify that the constraint $D$ introduced by the $∀$-type is satisfied when we substitute all $\bar{α}$ by $\bar{τ}$ in $D$, all while assuming the propagated constraint $C$.\footnote{
+  The action of substitution on constraints can actually be encoded \emph{as constraint}.
+  We have $[\Vec τ / \Vec α] (⋀_{i ∈ ℕ} Cᵢ) ≡ ⋀_{i ∈ ℕ} ([\Vec τ / \Vec α]Cᵢ) ≡ ⋀_{i ∈ ℕ} (∃\bar{α}. Cᵢ ∧ ⋀_{j}(αⱼ = τⱼ))$.
+}
 
 \subsection{Type Inference}
 \section{Instantiating \hmx{}}
