@@ -46,10 +46,11 @@
 \def\addcontentsline#1#2#3{\oldaddcontentsline{#1}{#2}{#3}}
 
 \begin{abstract}
-  We explore \hmx{}\cite{hmx}, a family of type systems designed to
+  We explore \hmx{}$^\text{\cite{hmx}}$, a family of type systems designed to
   combine
   polymorphism, full type inference and constraint types.
-  \hmx{} extends the Hindley-Milner type system (HM)\cite{hm}, which already
+  \hmx{} extends the Hindley-Milner type system (HM)$^\text{\cite{hm}}$, which
+  already
   limits
   System F, to ensure decidability and unambiguity of full type inference.
   The constraint system $X$ utilized in \hmx{} remains abstract, allowing
@@ -88,7 +89,7 @@ indicates that an expression of this type is polymorphic over some
 arbitrary type $α$.
 Unfortunately it is undecidable for arbitrary programs to determine when to
 introduce and eliminate $∀$-types and in consequence type inference in System F
-is undecidable\cite{sysf}.
+is undecidable$^\text{\cite{sysf}}$.
 
 Thus, System F is equipped with explicit type abstraction ($Λα. \ e$)
 and type
@@ -116,7 +117,7 @@ Poly types are further constrained to exclusively permit $∀$-binders at the to
 level.
 Therefore, a type like $(∀α. α) → (∀α. α)$ would not be a valid poly type.
 Consequently, we establish that poly types always adhere to the structure
-$∀\bar{α}. \ τ$, where $\bar{α} = α₁,..,αₙ$.
+$∀\bar{α}. \ τ$, where $\bar{α} = α₁,..,αₙ$ for some $n ∈ ℕ$.
 By upholding these two restrictions, that is let polymorphism and the exclusion
 of
 higher-order polymorphism, type inference remains decidable and
@@ -140,15 +141,15 @@ This type is in fact the most general type for `concat'.
 \subsection{Introducing Constraints on Types}
 Although parametric polymorphism is already a powerful abstraction, there are
 instances where we desire to constrain type variables solely to instantiations
-to types that satisfy certain constraints.
+of types that satisfy certain constraints.
 We refer to such types as \emph{constraint types}.
 Constraints can exhibit various different forms depending on the type features
 present in the actual language.
 As an illustration, consider HM$_𝓡$, that is HM extended with
-polymorphic records\cite{hmr}.
+polymorphic records$^\text{\cite{hmr}}$.
 In this scenario, it becomes valuable to have the capability to specify that a
 type variable $α$
-should solely be instantiated as a record type containing a specific fields.
+should only be instantiated as a record type containing a specific fields.
 \begin{example}[Alternative to Selector Syntax on Records for Field `key']
   \begin{lstlisting}
 key : $∀α, β.(α ≤ \{$key : $β\})$ $⇒ α → β$
@@ -178,9 +179,10 @@ $⊤$ we may also write $∀\bar{α}.$ $τ$.
 
 Naturally, we can envision entirely different constraints as well.
 Consider a language with overloading and overloading constraints
-HM$_𝓞$\cite{syso}.
+HM$_𝓞^\text{\cite{syso}}$.
 In HM$_𝓞$, constraints have the form $x : α → τ$,
-wherein an instance for the overloaded identifier $x$ with type $α → τ$ is
+wherein an instance for the overloaded identifier $x$ with type $α → τ$
+is
 expected to be present.
 \begin{example}[Overloading the Equality Operator for Lists]
   \begin{lstlisting}
@@ -196,16 +198,21 @@ eq = $λ$[].      $λ$[].      = $⊤$
 \end{example}
 This example considers the overloaded `eq' function.
 Initially, `eq' is instantiated for the base type `nat'.
-Subsequently, the instantiation for lists requires us to express that list
+Subsequently, the instantiation for lists requires us to express that
+list
 equality is feasible only when
-the elements of the list can be compared, that is, there exists a instance $α →
+the elements of the list can be compared, that is, there exists a
+instance $α
+  →
   α →$ bool.
 
-Instead of focusing exclusively on these individual systems, our exploration
+Instead of focusing exclusively on these individual systems, our
+exploration
 will center on \hmx{}, a HM-based system that remains detached from
 the actual constraint domain $X$.
-Subsequently, we will proceed to instantiate $X$ to a constraint system $𝓡$
-that supports polymorphic records, similar to HM${_𝓡}$.
+Subsequently, we will proceed to instantiate $X$ to a constraint system
+$𝓡$
+that supports polymorphic records, similar to HM$_𝓡$.
 
 \section{\hmx{}}
 
@@ -214,7 +221,8 @@ In this segment, our discussion of \hmx{} will adopt a slightly informal
 approach.
 We will skip over some specifics and formalities to ensure clarity and
 concentrate on
-grasping the underlying concepts of the system, rather than deriving a full
+grasping the underlying concepts of the system, rather than deriving a
+full
 formal definition.
 
 \subsection{Syntax}
@@ -268,25 +276,33 @@ able to introduce constraints $C$ in $∀$-types.
 
 The constraint syntax described here forms the \emph{minimal} essential
 components necessary for the syntax of constraint domain $X$.
-The underlying notion is that the constraint syntax is later extended when
+The underlying notion is that the constraint syntax is later extended
+when
 instantiating \hmx{}, and
-consequently also the syntax for expressions and types, to incorporate those
+consequently also the syntax for expressions and types, to incorporate
+those
 new
 constraints.
 
 A constraint $C$ is either $⊤$ (true), a conjunction of two constraints
 $C ∧ C$, an equality between mono types $τ = τ$, or a projection $∃α. \ C$.
-The projection operator introduces a new type variable $α$ to constraint $C$.
+The projection operator introduces a new type variable $α$ to constraint
+$C$.
 Through projection, it becomes possible to express the
 existence of a type without the necessity of actually introducing a new
 type variable at the type level.
-This mechanism proves advantageous within both the non-algorithmic typing rules
+This mechanism proves advantageous within both the non-algorithmic typing
+rules
 and
 type inference algorithms.
-Moreover, it actually extends the expressive capacity beyond that of solely
+Moreover, it actually extends the expressive capacity beyond that of
+solely
 introducing
-all type variables present in constraints using the $∀$-operator\footnote{Refer
-  to example 5}.
+all type variables present in constraints using the $∀$-operator.
+
+Typing contexts $Γ$ are either the empty context $∅$ or an extension of
+another
+context with the type $τ$ of a variable $x$, denoted as $Γ, \ x : σ$.
 
 \subsection{Typing}
 \begin{figure}[t]
@@ -339,16 +355,22 @@ all type variables present in constraints using the $∀$-operator\footnote{Refe
 \end{figure}
 
 Our current emphasis will be on the logical type system.
-The typing relation ($C, Γ ⊢ e : σ$) in \hmx{} extends the standard typing
+The typing relation ($C, Γ ⊢ e : σ$) in \hmx{} extends the standard
+typing
 relation ($Γ ⊢ e : T$) by integrating the propagation of a constraint $C$
 across the typing rules. The constraint $C$ must be in a solved form.
 Informally, this means that $C$ should be a satisfiable constraint and it
-should not contain equality predicates. Equality constraints should be resolved
+should not contain equality predicates. Equality constraints should be
+resolved
 through some form of unification.
 
 Unlike the inference
-algorithm, which is also provided for \hmx{}, the logical type system does not
-represent a determinable process for typing a provided expression. This is due
+algorithm, which is also provided for \hmx{}, the logical type system
+does
+not
+represent a determinable process for typing a provided expression. This
+is
+due
 to the $(∀$E$)$ and $(∀$I$)$ rules lacking syntax direction and being
 applicable at various points in the typing derivation.
 
@@ -357,76 +379,140 @@ found in the simply typed lambda
 calculus and operate on mono types, thus enforcing let
 polymorphism.
 On the other hand, the $($Var$)$ rule allows us to
-retrieve a variable with a poly type, potentially introduced through a let
+retrieve a variable with a poly type, potentially introduced through a
+let
 binding.
 The $($Let$)$ rule likewise enforces let polymorphism by permitting the
 expression bound by $x$ to have a poly type, even though the resulting
 overall type
 remains monomorphic.
-The $(∀$I$)$ and $(∀$E$)$ rules are particularly interesting as they enable the
+
+The $(∀$I$)$ and $(∀$E$)$ rules are particularly interesting as they
+enable
+the
 introduction and elimination of type variable bindings and constraints.
-Through the use of the $(∀$I$)$ rule, we can assign an arbitrary expression
-$e$, with current type $τ$, a poly type $∀ \Vec α.D ⇒ τ$, introducing new type
+Through the use of the $(∀$I$)$ rule, we can assign an arbitrary
+expression
+$e$, with current type $τ$, a poly type $∀ \Vec α.D ⇒ τ$, introducing new
+type
 variables $\Vec α$ and the constraint $D$.
 Hence, we check that expression $e$ has type $τ$ under the assumption of
-constraint $D$ in addition to the existing constraint $C$.
-Additionally, we add the constraint $∃\bar{α}. D$ in the conclusion of the
+$C ∧
+  D$.
+Additionally, we add the constraint $∃\bar{α}. D$ in the conclusion of
+the
 rule using conjunction.
-This addition is not strictly necessary but expresses that $D$ should be, at
-the very least, satisfiable, thereby enabling the detection of a type error
+This addition is not strictly necessary but expresses that $D$ should be,
+at
+the very least, satisfiable, thereby enabling the detection of a type
+error
 arising from an unsatisfiable constraint at an earlier stage.
-The $(∀$E$)$ rule allows us to eliminate a $∀$-type by substituting all type
-variables $\bar{α}$ with mono types $\bar{τ}$ in $τ$. This substitution of all
-bound variables with mono types results in a mono type again. More importantly
+The $(∀$E$)$ rule allows us to eliminate a $∀$-type by substituting all
+type
+variables $\bar{α}$ with mono types $\bar{τ}$ in $τ$. This substitution
+of
+all
+bound variables with mono types results in a mono type again. More
+importantly
 we need to verify that the constraint $D$ introduced by the $∀$-type is
 satisfied when we substitute all $\bar{α}$ by $\bar{τ}$ in $D$, all while
 assuming the propagated constraint $C$.\footnote{
 The action of substitution on constraints can again be encoded \emph{as
   constraint}.
-We have $[\Vec τ / \Vec α] (⋀_{i ∈ ℕ} Cᵢ) ≡ ⋀_{i ∈ ℕ} ([\Vec τ / \Vec α]Cᵢ) ≡
+We have $[\Vec τ / \Vec α] (⋀_{i ∈ ℕ} Cᵢ) ≡ ⋀_{i ∈ ℕ} ([\Vec τ / \Vec
+      α]Cᵢ) ≡
   ⋀_{i ∈ ℕ} (∃\bar{α}. Cᵢ ∧ ⋀_{j}(τⱼ = αⱼ))$.
 
 }
+We use the notation $C ⊢ D$ to indicate that we are verifying that some
+constraint $C$
+implies another constraint
+$D$.
 
 \subsection{Type Inference}
-Type inference in \hmx{} consists of two sequential steps. Initially, a typing
-problem is transformed into a constraint $D$ within the constraint system $X$.
-Subsequently, constraint $D$ undergoes normalization, a process involving the
-computation of a substitution $σ$ and a constraint $C$ in solved form. 
+Type inference in \hmx{} consists of two sequential steps. Initially, a
+typing
+problem is transformed into a constraint $D$ within the constraint system
+$X$.
+Subsequently, constraint $D$ undergoes normalization, a process involving
+the
+computation of a substitution $σ$ and a constraint $C$ in solved form.
 
 Normalization
-guarantees that $σC$ (where $σC$ is the application of substitution $σ$ to constraint $C$)
+guarantees that $σC$ (where $σC$ is the application of substitution $σ$
+to
+constraint $C$)
 implies $D$ and that $σC$ is a constraint in solved form.
-To ensure that a typing problem has the principal type property, it's necessary
-that constraints within $X$ exhibit the most general normalizers. Analogous to
-types, we require that $X$ must have the \emph{principal constraint} property.
-This property ensures that the most general constraints results from
-normalization. 
+To ensure that a typing problem has the principal type property, it's
+necessary
+that constraints within $X$ exhibit the most general normalizers.
+Analogous
+to
+types, we require that $X$ must have the \emph{principal constraint}
+property.
+This property ensures that the most general constraint results from
+normalization.
 Informally, this means for every constraint $D ∈ X$ we can compute a
-normalized constraint in solved form $σC$ where $σ$ is the minimal substitution
-necessary to transform $D$ into a solved form constraint $σC$ and $C$ implies
-$D$. More formally, a solved constraint $σC$ is a most
-general normalizer of constraint $φD$, if $φ ≤ σ$ (i.e. $∃χ(φ∘χ = σ)$, thus $φ$
-can be extended with $χ$ to $σ$), $C ⊢ σD$, $σC = C$ and for all other solved
-normal form $σ'C'$ we have that $σ' ≤ σ$ and $C' ⊢ σ'C$.
+normalized constraint in solved form $σC$ where $σ$ is the minimal
+substitution
+necessary to transform $D$ into a solved form constraint $σC$ and $C$
+implies
+$D$.
+% More formally, a solved constraint $σC$ is a most
+% general normalizer of constraint $φD$, if $φ ≤ σ$ (i.e. $∃χ(φ∘χ = σ)$, thus
+%$φ $
+% can be extended with $χ$ to $σ$), $C ⊢ σD$, $σC = C$ and for all other solved
+% normal form $σ'C'$ we have that $σ' ≤ σ$ and $C' ⊢ σ'C$.
 
-In the event that the constraint domain is the trivial constraint domain $\top$, the normalization procedure corresponds to the computation of the most general unifier within the Algorithm $W$ employed in HM.
+In the event that the constraint domain is the trivial constraint domain
+$\top$, the normalization procedure corresponds to the computation of the
+most
+general unifier within the Algorithm $W$ employed in HM.
 
-The actual inference algorithm takes four inputs: $σ$, $C$, $Γ$, and $e$. Initially, the first three are empty, while $e$ represents the expression for which we are deducing the type. 
-Within the algorithm, we perform a case split on expressions, all the while ensuring that recursive calls maintain the invariant that $σC$ remains a principal constraint by normalization.
+The actual inference algorithm takes four inputs: $σ$, $C$, $Γ$, and $e$.
+Initially, the first three are empty, while $e$ represents the expression
+for
+which we are deducing the type.
+Within the algorithm, we perform a case split on expressions, all the
+while
+ensuring that recursive calls maintain the invariant that $σC$ remains a
+principal constraint by normalization.
 
 \section{Instantiating \hmx{}}
 \subsection{\hmr{}: Instantiation with Polymorphic Records}
-\subsubsection{Extensions}
+We will now instantiate $X$ to $𝓡$, thus extending HM with
+polymorphic records and related constraints. Our focus will be only on the additions to the syntax, typing rules and minimal constraint language provided by \hmx{}.
+
 \begin{figure}[t]
+  \begin{subfigure}[t]{0.3\textwidth}
+    \begin{align*}
+      e \ := & \ \dots                            \\
+             & | \ \{lᵢ = eᵢ\} \text{ for } i ∈ ℕ \\
+             & | \ e.l
+    \end{align*}
+  \end{subfigure}
+  \begin{subfigure}[t]{0.3\textwidth}
+    \begin{align*}
+      C \ := & \ \dots            \\
+             & | \ τ ≤ \{l : τ\}
+    \end{align*}
+  \end{subfigure}
+  \begin{subfigure}[t]{0.3\textwidth}
+    \begin{align*}
+      τ \ := & \ \dots                            \\
+             & | \ \{lᵢ : τᵢ\} \text{ for } i ∈ ℕ
+    \end{align*}
+  \end{subfigure}
   \centering
-  \caption{Syntax}
+  \caption{Syntax Extensions}
 \end{figure}
 \begin{figure}[t]
+  
   \centering
-  \caption{Constraints}
+  \caption{Typing Extensions}
 \end{figure}
-\subsubsection{Example}
+
+
 \section{Metatheory}
 \subsection{Soundness}
 \subsection{Type Inference}
