@@ -52,7 +52,7 @@
     \begin{column}{0.6\textwidth}
       \begin{center}
         \begin{block}{Example: Polymorphic Identity Function}
-            \begin{minted}[escapeinside=||, mathescape = true]{ocaml}
+          \begin{minted}[escapeinside=||, mathescape = true]{ocaml}
   let id = |$\symbf λ$|x. x in    : |$\textcolor{blue}{\symbf{∀α. α → α}}$| 
   id 42                : Int
   id "Hello World"     : Str
@@ -132,7 +132,12 @@ let cons = .. : |$\textcolor{blue}{\symbf{∀α. α →}}$| |\textcolor{blue}{\t
         }
       \end{center}
       \begin{center}
-        \HMElim
+        \infer[∀ \ \text{Elim}]{
+          C, \ Γ ⊢ e : [\Vec τ / \Vec α] τ
+        }{
+          C,\ Γ ⊢ e : ∀ \Vec α.D ⇒ τ
+          & {C ⊢ [\Vec τ / \Vec α]D}
+        }
       \end{center}
     \end{column}
   \end{columns}
