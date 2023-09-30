@@ -27,7 +27,6 @@
 
 \newcommand{\hmx}{HM($X$)}
 \newcommand{\hmr}{HM($\mathcal{R}$)}
-\newcommand{\hmo}{HM($\mathcal{O}$)}
 \newcommand{\kwlet}{\textbf{let }}
 \newcommand{\kwin}{\textbf{ in }}
 
@@ -145,7 +144,7 @@ of types that satisfy certain constraints.
 We refer to such types as \emph{constraint types}.
 Constraints can exhibit various different forms depending on the type features
 present in the actual language.
-As an illustration, consider \hmr{}, that is HM extended with
+As an illustration, consider HM$_\mathcal{R}$, that is HM extended with
 polymorphic records$^\text{\cite{hmr}}$.
 In this scenario, it becomes valuable to have the capability to specify that a
 type variable $α$
@@ -174,8 +173,8 @@ $⊤$ we may also write $∀\bar{α}.$ $τ$.
 
 Naturally, we can envision entirely different constraints as well.
 Consider a language with overloading and overloading constraints
-\hmo{}$^\text{\cite{syso}}$.
-In \hmo{}, constraints have the form $x : α → τ$,
+HM_$\mathcal{O}^\text{\cite{syso}}$.
+In HM_$\mathcal$, constraints have the form $x : α → τ$,
 wherein an instance for the overloaded identifier $x$ with type $α → τ$
 is
 expected to be present.
@@ -205,7 +204,7 @@ will center on \hmx{}, a HM-based system that remains detached from
 the actual constraint domain $X$.
 Subsequently, we will proceed to instantiate $X$ to a constraint system
 $𝓡$
-that supports polymorphic records, similar to \hmr{}.
+that supports polymorphic records, similar to HM$_\mathcal{R}$.
 
 \section{\hmx{}}
 
@@ -398,15 +397,14 @@ at the very least, satisfiable, thereby enabling the detection of a type
 error arising from an unsatisfiable constraint at an earlier stage.
 
 Interestingly, there are alternative approaches to handling $D$ in the
-conclusion. For instance, one could entirely eliminate the satisfiability check
-$^\text{\cite{nosat}}$ or opt for a less restricted$^\text{\cite{weaksat}}$ or
-more restricted satisfiability
+conclusion. For instance, one could entirely eliminate the satisfiability
+check$^\text{\cite{nosat}}$ or opt for a less
+restricted$^\text{\cite{weaksat}}$ or more restricted satisfiability
 check$^\text{\cite{strongsat}}$. However, the solution presented in \hmx{}
-aligns most closely
-with our intuition, asserting that it is indeed true that $D$ must be at least
-satisfiable for some $\bar α$. One of the strengths of \hmx{} lies in the
-introduction of the projection operator, a novel idea not found in the other
-variants.
+aligns most closely with our intuition, asserting that it is indeed true that
+$D$ must be at least satisfiable for some $\bar α$. One of the strengths of
+\hmx{} lies in the introduction of the projection operator, a novel idea not
+found in the other variants.
 
 The $(∀$E$)$ rule allows us to eliminate a $∀$-type by substituting all
 type variables $\bar{α}$ with mono types $\bar{τ}$ in $τ$. This substitution
@@ -597,7 +595,8 @@ the same type $τ$ for $e$.
 \section{Related Work \& Conclusion}
 \subsection{Related Work}
 There are several constraint-like languages based on HM, such as
-\hmr{}$^\text{\cite{hmr}}$ and \hmo{}$^\text{\cite{syso}}$ that only cover a
+HM$_{\mathcal{R}}^\text{\cite{hmr}}$ and HM$_{\mathcal{o}}^\text{\cite{syso}}$
+that only cover a
 specific constraint domain.
 Additionally, there are alternative approaches to imposing arbitrary constraint
 systems on types, for example the theory of qualified
