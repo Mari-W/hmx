@@ -345,10 +345,10 @@ position in $τ$. We won't cover all the other, mostly trivial conditions.
     }
     \infer{}{}
     \infer[(∀\text{E})]{
-      C, \ Γ ⊢ e : [\Vec τ / \Vec α] τ
+    C, \ Γ ⊢ e : [\Vec τ / \Vec α] τ
     }{
-      C,\ Γ ⊢ e : ∀ \Vec α.D ⇒ τ
-      & {C ⊢ [\Vec τ / \Vec α]D}
+    C,\ Γ ⊢ e : ∀ \Vec α.D ⇒ τ
+    & {C ⊢ [\Vec τ / \Vec α]D}
     }
   \end{subfigure}
   \caption{Logical Type System $(C, Γ ⊢ e : σ)$}
@@ -596,10 +596,12 @@ the same type $τ$ for $e$.
 
 \section{Related Work \& Conclusion}
 \subsection{Related Work}
-There are several constraint-based languages based on HM, such as
-\hmr{}$^\text{\cite{hmr}}$ and \hmo{}$^\text{\cite{syso}}$.
+There are several constraint-like languages based on HM, such as
+\hmr{}$^\text{\cite{hmr}}$ and \hmo{}$^\text{\cite{syso}}$ that only cover a
+specific constraint domain.
 Additionally, there are alternative approaches to imposing arbitrary constraint
-systems on types, for example the theory of qualified types$^\text{\cite{tqt}}$.
+systems on types, for example the theory of qualified
+types$^\text{\cite{tqt}}$.
 
 \hmx{} is also the subject of various follow-up papers, including proofs of
 other noteworthy properties$^\text{\cite{phmx}}$, its connection to CSP
