@@ -89,7 +89,6 @@ arbitrary type $α$.
 Unfortunately it is undecidable for arbitrary programs to determine when to
 introduce and eliminate $∀$-types and in consequence type inference in System F
 is undecidable$^\text{\cite{sysf}}$.
-
 Thus, System F is equipped with explicit type abstraction ($Λα. \ e$)
 and type
 application ($e \ T$) on the syntax level.
@@ -98,18 +97,18 @@ The HM type system imposes several restrictions that make type
 inference decidable in a polymorphic context. Moreover, HM ensures that the
 most general type (the \emph{principal type}) of a any given program is
 inferred.
-Consequently, there's no need for extra syntax to introduce or eliminate type
+Consequently, there is no need for extra syntax to introduce or eliminate type
 variables.
 Instead, HM adds let bindings $\kwlet x = e₂ \kwin e₁$ to the language, where
 $e₂$ is the only expression that is allowed to have a polymorphic type.
 Other constructs, such as application or variables bound by a lambda
-abstractions, cannot inherit polymorphic types.
-This constraint is commonly referred to as `let polymorphism'.
+abstractions, cannot have polymorphic types.
+This constraint is commonly referred to as let polymorphism.
 
 In the future, we will label polymorphic types as $σ$,
-where a $∀$-type exists within $σ$, and we will refer to them as `poly types'.
+where a $∀$-type exists within $σ$ and we will refer to them as poly types.
 On the contrary, all other types, including base
-types, functions and type variables, will be referred to as `mono types' and
+types, functions and type variables, will be referred to as mono types and
 denoted as $τ$.
 
 Poly types are further constrained to exclusively permit $∀$-binders at the top
@@ -130,7 +129,8 @@ concat = $λ$[].      $λ$ys. ys
 \end{example}
 Examples assume the extension with various language features such as
 lists and pattern matching.
-For convenience, type annotations are given for inferred function types.
+For convenience, type annotations are given for inferred types of haskell style
+let bindings.
 
 In this example, HM would be capable of deducing the type $∀α.\ [α] → [α] →
   [α]$
@@ -163,7 +163,7 @@ employed.
 We introduce two type variables, namely $α$ and $β$. While $β$ exhibits
 parametric polymorphism, $α$ functions as a constraint type.
 The constraint imposed on $α$, denoted as $α ≤ \{$key : $β\}$, expresses that
-$α$ is exclusively permitted to take on a type that corresponds to a record
+$α$ is exclusively permitted to take on a record type
 featuring a `key' field of some arbitrary type $β$.
 For introducing a constraint $C$ on type variables $\bar{α}$, we will adopt the
 notation $∀\bar{α}.C$ $⇒ τ$.
@@ -171,7 +171,7 @@ Multiple constraints will be combined to a single
 constraint using conjunction. If the constraint $C$ is the trivial constraint
 $⊤$ we may also write $∀\bar{α}.$ $τ$.
 
-Naturally, we can envision entirely different constraints as well.
+Naturally, we can envision entirely different constraint systems as well.
 Consider a language with overloading and overloading constraints
 HM$_𝒪^\text{\cite{syso}}$.
 In HM$_𝒪$, constraints have the form $x : α → τ$,
@@ -190,13 +190,13 @@ eq = $λ$[].      $λ$[].      = $⊤$
      $λ$_.       $λ$_.       = $⊥$
   \end{lstlisting}
 \end{example}
-This example considers the overloaded `eq' function.
-Initially, `eq' is instantiated for the base type `nat'.
+This example considers the overloaded \verb|eq| function.
+Initially, \verb|eq| is instantiated for the base type \verb|nat|.
 Subsequently, the instantiation for lists requires us to express that
 list
 equality is feasible only when
 the elements of the list can be compared, that is, there exists a
-instance for `eq' of type $α → α →$ bool.
+instance for \verb|eq| of type $α → α →$ bool.
 
 Instead of focusing exclusively on these individual systems, our
 exploration
@@ -252,10 +252,10 @@ formal definition.
   \caption{Syntax}
 \end{figure}
 
-The syntax of \hmx{} is closely related to that of HM.
+The syntax of \hmx{} described in Fig. 1 is closely related to that of HM.
 
 Expressions $e$ include the constructs found in the simply typed lambda
-calculus, more specifically variables $x$, abstractions $λx. \ e$, and
+calculus, more specifically variables $x$, abstractions $λx. \ e$ and
 applications $e \
   e$.
 Additionally, let bindings are present to constrain the language to let
@@ -271,9 +271,8 @@ context with the type $τ$ of a variable $x$, denoted as $Γ, \ x : σ$.
 
 The constraint syntax described here forms the \emph{minimal} essential
 components necessary for the syntax of constraint domain $X$.
-The underlying notion is that the constraint syntax is later extended
-when
-instantiating \hmx{}, and
+The underlying notion is that the constraint syntax is later extended when
+instantiating \hmx{} and
 consequently also the syntax for expressions and types, to incorporate
 those
 new
@@ -287,9 +286,7 @@ Through projection, it becomes possible to express the
 existence of a type without the necessity of actually introducing a new
 type variable at the type level.
 This mechanism proves advantageous within both the non-algorithmic typing
-rules
-and
-type inference algorithms.
+rules and type inference algorithm.
 Moreover, it actually extends the expressive capacity beyond that of
 solely introducing all type variables present in constraints using
 the $∀$-operator.
@@ -301,7 +298,7 @@ straightforward conditions, such as $∃\bar{α}.∃\bar{b}. \ C ≡
   ∃\bar{b}.∃\bar{α}. \ C$ or $(τ₁ = τ₂) ⊢ (τ[τ₁]
   = τ[τ₂])$, where both $τ[τ₁]$ and $τ[τ₂]$ substitute $τ₁$ and $τ₂$ at the
 same
-position in $τ$. We won't cover all the other, mostly trivial conditions.
+position in $τ$. We will not cover all the other, mostly trivial conditions.
 
 \subsection{Typing}
 \begin{figure}[t]
@@ -353,10 +350,10 @@ position in $τ$. We won't cover all the other, mostly trivial conditions.
   \caption{Logical Type System $(C, Γ ⊢ e : σ)$}
 \end{figure}
 
-Our current emphasis will be on the logical type system.
+Our current emphasis will be on the logical type system given in Fig. 2.
 The typing relation $C, Γ ⊢ e : σ$ extends the standard
 typing relation $Γ ⊢ e : T$ by integrating the propagation of a constraint $C$
-across the typing rules. The constraint $C$ must be in a solved form.
+across the typing rules. The constraint $C$ must be in solved form.
 Informally, this means that $C$ should be a satisfiable constraint and it
 should not contain equality predicates. Equality constraints should be
 resolved
@@ -365,7 +362,7 @@ through some form of unification.
 Unlike the inference
 algorithm, which is also provided for \hmx{}, the logical type system
 does not represent a determinable process for typing a provided expression.
-This is due to the $(∀$E$)$ and $(∀$I$)$ rules lacking syntax direction and
+This is due to the $(∀$I$)$ and $(∀$E$)$ rules lacking syntax direction and
 being applicable at various points in the typing derivation.
 
 Both $($Abs$)$ and $($App$)$ are the familiar standards
@@ -441,15 +438,15 @@ This property ensures that the most general constraint results from
 normalization.
 Informally, this means for every constraint $D ∈ X$ we can compute a
 normalized constraint in solved form $σC$ where $σC$ is the \emph{minimal}
-normalizer for $D$ and $C$ implies $D$. The minimality of a normalizer in this
+normalizer for $D$. The minimality of a normalizer in this
 case means there does not exist another normalizer $φC'$ such that $∃ξ. \ ξ ≠ ∅
   ∧ φ ∘ ξ = σ$.
 In the event that the constraint domain is the trivial constraint domain
-$\top$, the normalization procedure corresponds to the computation of the
-most general unifier within the Algorithm $W$ employed in HM.
+$Τ$, the normalization procedure corresponds to the computation of the
+most general unifier within the Algorithm $W$ used in HM.
 
 The actual inference algorithm takes four inputs: A substitution $σ$, a
-constraint in solved form $C$, a typing context $Γ$, and expression $e$.
+constraint in solved form $C$, a typing context $Γ$ and expression $e$.
 We write $σ, C, Γ ⊢ e : τ$ when we use the inference algorithm to deduce
 type $τ$ for $e$.
 Initially, the first two inputs are empty and $C$ is trivially satisfied, while
@@ -499,7 +496,8 @@ polymorphic records and related constraints. Our focus will be only on the
 additions to the syntax, typing rules and minimal constraint language provided
 by \hmx{}.
 
-The extensions introduce the record formation expression, the selection
+The extension described in Fig. 3 introduce the record formation expression,
+the selection
 operator and the record type to the language, along with the
 record subtyping constraint $τ ≤ \{l ∶ τ'\}$, which says that $τ$ is a record
 and must have at least the field $l$ of type $τ'$.
@@ -541,7 +539,7 @@ not in the type signature.
 We will now look into some metatheoretical properties of both the logical type
 system and the inference algorithm presented in \hmx{}.
 In this discussion, we will once again adopt an informal approach, skipping
-some specifics, and omitting the proofs entirely. These results are
+some specifics and omitting the proofs entirely. These results are
 particularly
 interesting because they are independent of the constraint domain $X$.
 
@@ -550,7 +548,7 @@ The logical type system of \hmx{} is proven to be sound. Soundness essentially
 states the idea that `well typed programs don't go wrong'.
 In the original paper,
 this proof is established through denotational semantics, where mathematical
-objects are constructed for both types and terms, and the statements are proven
+objects are constructed for both types and terms and the statements are proven
 within the domain of mathematics. Later, it was also proven using operational
 semantics, where evaluation is described as a reduction relation $e ↪ e$ on
 expressions$^\text{\cite{sts}}$.
@@ -568,7 +566,7 @@ $⊢ [\bar{α}/\bar{τ}]C$.
 In essence, this implies that every existentially quantified constraint must be
 actually satisfiable for some types $\bar{τ}$.
 
-To establish progress for \hmx{}, we must prove that if $e$ is a
+To establish progress for \hmx{}, we must prove that if $e$ is a closed,
 well-typed expression, meaning $C, ∅ ⊢ e : τ$, then either $e$ is already a
 fully reduced value or it can be reduced to some other expression,
 i.e. $e ↪ e'$. Since this statement only holds in the empty context $∅$, we
@@ -597,7 +595,7 @@ the same type $τ$ for $e$.
 \section{Related Work \& Conclusion}
 \subsection{Related Work}
 There are several constraint-like languages based on HM, such as
-HM$_ℛ^\text{\cite{hmr}}$ and HM$_𝒪^\text{\cite{syso}}$
+HM$_ℛ^\text{\cite{hmr}}$ and HM$_𝒪^\text{\cite{syso}}$,
 that only cover a
 specific constraint domain.
 Additionally, there are alternative approaches to imposing arbitrary constraint
